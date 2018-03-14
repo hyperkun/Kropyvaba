@@ -171,7 +171,7 @@ STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 config = {
-    'title': "Кропивач",
+    'title': "Гіперчан",
     'url_favicon': "favicon.ico",
     'url_stylesheet': "style.css",
     'default_stylesheet': {
@@ -186,7 +186,7 @@ config = {
         'report.js',
         'truncate.js',
     ],
-    'footer': ['Кропивач 2016-2017'],
+    'footer': ['Гіперчан 2014-14880. Використовує vichan та Kropyvaba.'],
     'max_filesize': 40 * 1024 * 1024,  # 40MB
     'max_images': 4,
     'allowed_ext': ['png', 'jpeg', 'gif', 'jpg', 'webm'],

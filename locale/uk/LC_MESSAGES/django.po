@@ -20,8 +20,8 @@ msgstr ""
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #: posts/templates/posts/boardlist.html:4 posts/templates/posts/page.html:12
-msgid "Кропивач"
-msgstr "Кропивач"
+msgid "Гіперчан"
+msgstr "Гіперчан"
 
 #: posts/templates/posts/catalog.html:12 posts/templates/posts/index.html:85
 #: posts/templates/posts/page.html:65
