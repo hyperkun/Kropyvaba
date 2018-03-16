@@ -19,9 +19,6 @@ from django.core.paginator import Paginator
 from django.utils.translation import ugettext as _
 # from django.views.decorators.cache import cache_page
 
-# database models
-from posts.models import Board, Post, Report
-
 from posts.forms import PostForm
 from config.settings import MEDIA_ROOT
 from config.settings import config  # , CACHE_TTL

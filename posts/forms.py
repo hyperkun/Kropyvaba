@@ -11,7 +11,7 @@ import re
 import GeoIP
 import simplejson as json
 
-from django.forms import ModelForm
+from django.forms import BaseForm
 from django.core.urlresolvers import reverse
 from django.core.files.uploadedfile import UploadedFile
 from PIL import Image
@@ -20,11 +20,10 @@ from imagekit.processors import ResizeToFit
 
 from config.settings import config
 from config.settings import MEDIA_ROOT
-from posts.models import Post, Board, Ban
 from precise_bbcode.bbcode import get_parser
 
 
-class PostForm(ModelForm):
+class PostForm(BaseForm):
     """
     form for user posts
     """
@@ -98,13 +97,6 @@ class PostForm(ModelForm):
         new_post.bump = time
         new_post.save()
         return new_post.id
-
-    class Meta(object):
-        """
-        meta class for ModelForm
-        """
-        model = Post
-        exclude = ['time', 'sage', 'cycle', 'locked', 'sticky', 'ip', 'board']
 
 
 def spam(text):
