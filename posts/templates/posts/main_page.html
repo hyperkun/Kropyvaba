@@ -54,8 +54,8 @@
 				<div id='boards-table'>
 					{% for board in boards %}
 						<strong>
-							<a href="{% url 'board' board.uri %}" title="{{ board.title }}">{{ board.title }}
-								{% if board.uri == 'b' or board.uri == 'f'%}<span class='nsfw'> (18+){% endif %}</span></a>
+							<a href="{% url 'board' board.url %}" title="{{ board.title }}">{{ board.title }}
+								<span class='nsfw'> (99+)</span></a>
 						</strong><br>
 					{% endfor %}
 				</div>

@@ -21,9 +21,14 @@ from django.utils.translation import ugettext as _
 
 from posts.forms import PostForm
 from config.settings import MEDIA_ROOT
+from posts.models import get_all_last_posts
 from config.settings import config  # , CACHE_TTL
 
 EMPTY_POST = _('(коментар відсутній)')
+BOARDS = [
+    {'url': 'b', 'title': 'Безлад'},
+    {'url': 'meta', 'title': 'Робота сайту'}
+]
 
 
 class Page404(object):
@@ -49,13 +54,12 @@ def render_index(request):
     :return: main page
     """
     boards = get_boards_navlist()
+    PostBreaf.set_boards(boards)
     fields = ['id', 'body_nomarkup', 'thread', 'time', 'ip', 'board_id']
-    posts = Post.objects.values(*fields).order_by('-time')
-    PostBreaf.set_boards(boards.values())
+    posts = get_all_last_posts(30)
     if len(posts):
-        recent = [PostBreaf(post) for post in posts[:30][::-1]]
-        recent = sorted(recent, key=lambda x: x.time, reverse=True)
-        stats = make_stats(posts)
+        recent = [PostBreaf(post) for post in posts]
+        stats = get_stats()
     else:
         recent = []
         stats = None
@@ -344,22 +348,11 @@ def get_ip(request):
 
 
 def get_board(board_uri):
-    """
-    TODO: rewrite
-
-    :return: cached board object
-    """
-    return Board.objects.get(uri=board_uri)
+    return next(board for board in BOARDS if board['url'] == board_uri)
 
 
 def get_boards_navlist():
-    """
-    TODO: rewrite
-
-    :return: board
-    """
-    boards = Board.objects.exclude(uri='bugs').order_by('uri')
-    return boards
+    return BOARDS
 
 
 class PostBreaf(object):
