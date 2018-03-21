@@ -37,7 +37,7 @@ def get_stats():
 
 class Demarkuper(HTMLParser):
     def __init__(self):
-        HTMLParser.__init__(self)
+        super().__init__()
         self.text = ""
 
     def handle_starttag(self, tag, attrs):
