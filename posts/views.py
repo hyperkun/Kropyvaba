@@ -21,7 +21,7 @@ from django.utils.translation import ugettext as _
 
 from posts.forms import PostForm
 from config.settings import MEDIA_ROOT
-from posts.models import get_all_last_posts
+from posts.models import get_all_last_posts, get_stats
 from config.settings import config  # , CACHE_TTL
 
 EMPTY_POST = _('(коментар відсутній)')
@@ -365,7 +365,7 @@ class PostBreaf(object):
         self.time = post['time']
         boards = PostBreaf.boards
         for _board in boards:
-            if _board['id'] == post['board_id']:
+            if _board['url'] == post['board_id']:
                 board = _board
 
         def _slice(text):
@@ -383,7 +383,7 @@ class PostBreaf(object):
 
         self.snippet = sliced_body if length_of_sliced_body else EMPTY_POST
         self.board_name = board['title']
-        self.board_url = board['uri']
+        self.board_url = board['url']
 
     @classmethod
     def set_boards(cls, boards):
