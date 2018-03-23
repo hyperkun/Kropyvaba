@@ -5,6 +5,7 @@ from django.utils import timezone
 from config.settings import MEDIA_ROOT
 from django.db import connection
 from html.parser import HTMLParser
+from posts.owls import last_b_posts_query, last_meta_posts_query
 
 def get_all_last_posts(limit = None):
     limit = limit or 9999
