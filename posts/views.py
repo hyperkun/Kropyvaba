@@ -89,13 +89,7 @@ def render_board(request, board_name, current_page=1):
     threads = get_all_threads(board)
     pages = Paginator(threads, 10)
     threads = pages.page(int(current_page))
-    """
-    for thread in threads:
-        thread.posts = posts.filter(thread=thread.id)
-        posts_len = len(thread.posts)
-        thread.omitted = posts_len - 5 if posts_len >= 5 else 0
-        thread.posts = thread.posts[thread.omitted:]
-    """
+    get_all_on_board_posts_for_threads(threads)
     if request.method == 'POST':
         json_response = 'json_response' in request.POST
         agreed_with_rules = 'rules' in request.POST

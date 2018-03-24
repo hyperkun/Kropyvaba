@@ -12,15 +12,15 @@ def get_all_last_posts(limit = None):
     posts = []
     with connection.cursor() as cursor:
         cursor.execute(last_b_posts_query("select * from posts_b order by creation desc limit %s"), [limit])
-        posts.extend(extract(cursor, 'b'))
+        posts.extend(extract_posts(cursor, 'b'))
         cursor.execute(last_meta_posts_query("select * from posts_meta order by creation desc limit %s"), [limit])
-        posts.extend(extract(cursor, 'meta'))
+        posts.extend(extract_posts(cursor, 'meta'))
     posts = posts[:limit]
     sorted(posts, key=lambda post: post['time'], reverse=True)
     return posts
 
 
-def extract(cursor, board_name):
+def extract_posts(cursor, board_name):
     posts = cursor.fetchall()
     dm = Demarkuper()
     return [{
@@ -62,4 +62,31 @@ class Demarkuper(HTMLParser):
 def get_all_threads(board):
     with connection.cursor() as cursor:
         cursor.execute(threads_query("select * from threads_%s order by last_bump desc", board['url']))
-        return cursor.fetchall()
+        return extract_threads(cursor, board['url'])
+
+
+def extract_threads(cursor, board_name):
+    threads = cursor.fetchall()
+    return [{
+        'id': int(thread[0]),
+        'board': board_name
+    } for thread in threads]
+
+
+def get_all_on_board_posts_for_threads(threads):
+    if len(threads) == 0:
+        return
+    assert all(thread['board'] == threads[0]['board'] for thread in threads)
+    board = threads[0]['board']
+    with connection.cursor() as cursor:
+        in_str = ','.join([str(thread['id']) for thread in threads])
+        cursor.execute(board_posts_query(
+            "select * from posts_%s where id in (%s) or (thread in (%s) and on_board) order by creation asc",
+            board,
+            in_str))
+        posts = extract_posts(cursor, board)
+    for post in posts:
+        thread = next(x for x in threads if x['id'] == post['id'] or x['id'] == post['thread'])
+        if 'posts' not in thread:
+            thread['posts'] = []
+        thread['posts'].append(post)

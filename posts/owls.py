@@ -11,3 +11,7 @@ def last_meta_posts_query(query):
 
 def threads_query(query, board_url):
     return query % board_url
+
+
+def board_posts_query(query, board_url, in_str):
+    return query % (board_url, in_str, in_str)
