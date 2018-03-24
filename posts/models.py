@@ -11,9 +11,9 @@ def get_all_last_posts(limit = None):
     limit = limit or 9999
     posts = []
     with connection.cursor() as cursor:
-        cursor.execute("select * from posts_b order by creation desc limit %s", [limit])
+        cursor.execute(last_b_posts_query("select * from posts_b order by creation desc limit %s"), [limit])
         posts.extend(extract(cursor, 'b'))
-        cursor.execute("select * from posts_meta order by creation desc limit %s", [limit])
+        cursor.execute(last_meta_posts_query("select * from posts_meta order by creation desc limit %s"), [limit])
         posts.extend(extract(cursor, 'meta'))
     posts = posts[:limit]
     sorted(posts, key=lambda post: post['time'], reverse=True)
