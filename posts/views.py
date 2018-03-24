@@ -21,7 +21,7 @@ from django.utils.translation import ugettext as _
 
 from posts.forms import PostForm
 from config.settings import MEDIA_ROOT
-from posts.models import get_all_last_posts, get_stats
+from posts.models import *
 from config.settings import config  # , CACHE_TTL
 
 EMPTY_POST = _('(коментар відсутній)')
@@ -86,7 +86,7 @@ def render_board(request, board_name, current_page=1):
     """posts = get_posts(board)
     threads = get_threads(posts).order_by('-bump')
     """
-    threads = []
+    threads = get_all_threads(board)
     pages = Paginator(threads, 10)
     threads = pages.page(int(current_page))
     """

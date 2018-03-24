@@ -7,3 +7,7 @@ def last_b_posts_query(query):
 
 def last_meta_posts_query(query):
     return query
+
+
+def threads_query(query, board_url):
+    return query % board_url
