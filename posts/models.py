@@ -6,6 +6,7 @@ from config.settings import MEDIA_ROOT
 from django.db import connection
 from html.parser import HTMLParser
 from posts.owls import *
+from django.core.urlresolvers import reverse
 
 def get_all_last_posts(limit = None):
     limit = limit or 9999
@@ -25,7 +26,7 @@ def extract_posts(cursor, board_name):
     dm = Demarkuper()
     return [{
         'id': int(post[0]),
-        'body': convert_to_classic_markup(post[1]),
+        'body': convert_to_classic_markup(board_name, post[1]),
         'body_nomarkup': dm.feeda(post[1]),
         'thread': int(post[2] or post[0]),
         'is_op': post[2] is None,
@@ -65,7 +66,7 @@ def str_replaced(str, begin, end, replacement):
     return str[:begin] + replacement + str[end:]
 
 
-def convert_to_classic_markup(markup):
+def convert_to_classic_markup(board_context, markup):
     begin = 0
     while True:
         prefix = '<span class=l data-post='
@@ -91,10 +92,20 @@ def convert_to_classic_markup(markup):
         begin = markup.find(postfix, post_place)
         assert begin != -1
         begin += len(postfix)
-        replacement = 'TEST' + str(post_id)
+        replacement = classic_markup_link(board_id or board_context, post_id)
         markup = str_replaced(markup, pr_place, begin, replacement)
         begin = pr_place + len(replacement)
     return markup
+
+
+def classic_markup_link(board_id, post_id):
+    op = get_thread(board_id, post_id)
+    thread_id = op or post_id
+    link = reverse('thread', args=[board_id, thread_id])
+    if op is not None:
+        link += '#' + str(post_id)
+    return '''<a onclick="highlightReply('{0}', event);\
+            " href="{1}">&gt;&gt;{0}</a>'''.format(post_id, link)
 
 
 def get_all_threads(board):
@@ -135,3 +146,10 @@ def get_all_on_board_posts_for_threads(threads):
     for _, post in op_posts.items():
         post['posts'] = reply_posts[post['id']] if post['id'] in reply_posts else []
     return [op_posts[thread['id']] for thread in threads]
+
+
+def get_thread(board_id, id):
+    with connection.cursor() as cursor:
+        cursor.execute(post_query("select thread from posts_%s where id = %s", board_id), [id])
+        thread = cursor.fetchone()
+    return thread[0]
