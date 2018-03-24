@@ -7,7 +7,7 @@
     <span class="sub" data-description="1">
         [
           {% for board in boards %}
-            <a href="{% url 'board' board.uri %}" title="{{ board.name }}">{{ board.uri }}</a> /
+            <a href="{% url 'board' board.url %}" title="{{ board.name }}">{{ board.url }}</a> /
           {% endfor %}
         ]
     </span>

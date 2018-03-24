@@ -83,8 +83,7 @@ def render_board(request, board_name, current_page=1):
     :return: board page
     """
     board = get_board(board_name)
-    board.url = board.uri
-    posts = get_posts(board)
+    """posts = get_posts(board)
     threads = get_threads(posts).order_by('-bump')
     pages = Paginator(threads, 10)
     threads = pages.page(int(current_page))
@@ -125,6 +124,17 @@ def render_board(request, board_name, current_page=1):
         'boards': get_boards_navlist(),
         'threads': threads,
         'pages': pages,
+        'hr': True,
+        'index': True,
+        'form': form
+    }"""
+    form = PostForm()
+    context = {
+        'config': config,
+        'board': board,
+        'boards': get_boards_navlist(),
+        'threads': [],
+        'pages': [],
         'hr': True,
         'index': True,
         'form': form

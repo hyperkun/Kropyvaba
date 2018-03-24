@@ -11,7 +11,8 @@ import re
 import GeoIP
 import simplejson as json
 
-from django.forms import BaseForm
+from django.forms import Form
+from django import forms
 from django.core.urlresolvers import reverse
 from django.core.files.uploadedfile import UploadedFile
 from PIL import Image
@@ -23,10 +24,27 @@ from config.settings import MEDIA_ROOT
 from precise_bbcode.bbcode import get_parser
 
 
-class PostForm(BaseForm):
+class PostForm(Form):
     """
     form for user posts
     """
+
+    id = forms.IntegerField()
+    thread = forms.IntegerField()
+    subject = forms.CharField(max_length=100)
+    email = forms.CharField(max_length=30)
+    name = forms.CharField(max_length=35)
+    trip = forms.CharField(max_length=15)
+    capcode = forms.CharField(max_length=50)
+    body = forms.CharField()
+    body_nomarkup = forms.CharField(max_length=16000)
+    bump = forms.IntegerField()
+    files = forms.CharField()
+    num_files = forms.IntegerField()
+    filehash = forms.CharField()
+    password = forms.CharField(max_length=20)
+    embed = forms.CharField()
+    slug = forms.CharField(max_length=256)
 
     def process(self, board, _ip, thread):
         """
