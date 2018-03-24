@@ -25,7 +25,7 @@ def extract_posts(cursor, board_name):
     dm = Demarkuper()
     return [{
         'id': int(post[0]),
-        'body': post[1],
+        'body': convert_to_classic_markup(post[1]),
         'body_nomarkup': dm.feeda(post[1]),
         'thread': int(post[2] or post[0]),
         'is_op': post[2] is None,
@@ -59,6 +59,42 @@ class Demarkuper(HTMLParser):
         self.text = ""
         self.feed(str)
         return self.text
+
+
+def str_replaced(str, begin, end, replacement):
+    return str[:begin] + replacement + str[end:]
+
+
+def convert_to_classic_markup(markup):
+    begin = 0
+    while True:
+        prefix = '<span class=l data-post='
+        pr_place = markup.find(prefix, begin)
+        if pr_place == -1:
+            break
+        begin = pr_place + len(prefix)
+        post_place = markup.find('>', begin)
+        assert post_place != -1
+        assert post_place != begin
+        space_place = markup.find(' ', begin, post_place)
+        if space_place == -1:
+            post_id = markup[begin:post_place]
+            board_id = None
+        else:
+            post_id = markup[begin:space_place]
+            board_suffix = ' data-board='
+            board_place = space_place + len(board_suffix)
+            assert markup[space_place:board_place] == board_suffix
+            board_id = markup[board_place:post_place]
+        post_id = int(post_id)
+        postfix = '</span>'
+        begin = markup.find(postfix, post_place)
+        assert begin != -1
+        begin += len(postfix)
+        replacement = 'TEST' + str(post_id)
+        markup = str_replaced(markup, pr_place, begin, replacement)
+        begin = pr_place + len(replacement)
+    return markup
 
 
 def get_all_threads(board):
