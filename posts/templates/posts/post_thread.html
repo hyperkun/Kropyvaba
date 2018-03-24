@@ -1,5 +1,5 @@
 {% load i18n %}
-<div class="thread" id="thread_{{ post.id }}" data-board="{{ board.uri }}">
+<div class="thread" id="thread_{{ post.id }}" data-board="{{ board.url }}">
 {% if not index %}<a id="{{ post.id }}" class="post_anchor"></a>{% endif %}
 
 {% include 'posts/post/fileinfo.html' %}

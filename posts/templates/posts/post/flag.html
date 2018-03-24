@@ -1,6 +1,6 @@
 {% load index %}
 {% load static %}
-{% if board.flags != 'NO' %}
+{% if board.flags %}
 	<img
 	class="flag" src="{% static post.body_nomarkup|get_flag %}"
 		style="

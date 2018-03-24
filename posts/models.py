@@ -27,6 +27,7 @@ def extract_posts(cursor, board_name):
         'id': int(post[0]),
         'body_nomarkup': dm.feeda(post[1]),
         'thread': int(post[2] or post[0]),
+        'is_op': post[2] is None,
         'time': post[4],
         'board_id': board_name
     } for post in posts]
@@ -85,8 +86,15 @@ def get_all_on_board_posts_for_threads(threads):
             board,
             in_str))
         posts = extract_posts(cursor, board)
+    op_posts = {}
+    reply_posts = {}
     for post in posts:
-        thread = next(x for x in threads if x['id'] == post['id'] or x['id'] == post['thread'])
-        if 'posts' not in thread:
-            thread['posts'] = []
-        thread['posts'].append(post)
+        if post['is_op']:
+            op_posts[post['id']] = post
+        else:
+            if post['thread'] not in reply_posts:
+                reply_posts[post['thread']] = []
+            reply_posts[post['thread']].append(post)
+    for _, post in op_posts.items():
+        post['posts'] = reply_posts[post['id']] if post['id'] in reply_posts else []
+    return op_posts.values()

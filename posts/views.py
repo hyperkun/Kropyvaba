@@ -26,8 +26,8 @@ from config.settings import config  # , CACHE_TTL
 
 EMPTY_POST = _('(коментар відсутній)')
 BOARDS = [
-    {'url': 'b', 'title': 'Безлад'},
-    {'url': 'meta', 'title': 'Робота сайту'}
+    {'url': 'b', 'title': 'Безлад', 'flags': False},
+    {'url': 'meta', 'title': 'Робота сайту', 'flags': False}
 ]
 
 
@@ -89,7 +89,7 @@ def render_board(request, board_name, current_page=1):
     threads = get_all_threads(board)
     pages = Paginator(threads, 10)
     threads = pages.page(int(current_page))
-    get_all_on_board_posts_for_threads(threads)
+    threads = get_all_on_board_posts_for_threads(threads)
     if request.method == 'POST':
         json_response = 'json_response' in request.POST
         agreed_with_rules = 'rules' in request.POST
