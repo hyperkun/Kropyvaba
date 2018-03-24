@@ -25,6 +25,7 @@ def extract_posts(cursor, board_name):
     dm = Demarkuper()
     return [{
         'id': int(post[0]),
+        'body': post[1],
         'body_nomarkup': dm.feeda(post[1]),
         'thread': int(post[2] or post[0]),
         'is_op': post[2] is None,
@@ -97,4 +98,4 @@ def get_all_on_board_posts_for_threads(threads):
             reply_posts[post['thread']].append(post)
     for _, post in op_posts.items():
         post['posts'] = reply_posts[post['id']] if post['id'] in reply_posts else []
-    return op_posts.values()
+    return [op_posts[thread['id']] for thread in threads]
