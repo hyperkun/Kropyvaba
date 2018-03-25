@@ -95,6 +95,20 @@ def convert_to_classic_markup(board_context, markup):
         replacement = classic_markup_link(board_id or board_context, post_id)
         markup = str_replaced(markup, pr_place, begin, replacement)
         begin = pr_place + len(replacement)
+    begin = 0
+    line_end = '<br>'
+    while True:
+        if begin == len(markup):
+            break
+        line_end_pos = markup.find(line_end, begin)
+        if line_end_pos == -1:
+            line_end_pos = len(markup)
+        if markup[begin] == '>':
+            replacement = '<span class=quote>' + markup[begin:line_end_pos] +\
+                '</span>'
+            markup = str_replaced(markup, begin, line_end_pos, replacement)
+            line_end_pos = begin + len(replacement)
+        begin = min(len(markup), line_end_pos + len(line_end))
     return markup
 
 
