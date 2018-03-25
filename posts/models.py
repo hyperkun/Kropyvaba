@@ -132,7 +132,8 @@ def extract_threads(cursor, board_name):
     threads = cursor.fetchall()
     return [{
         'id': int(thread[0]),
-        'board': board_name
+        'board': board_name,
+        'subject': thread[10]
     } for thread in threads]
 
 
@@ -159,7 +160,12 @@ def get_all_on_board_posts_for_threads(threads):
             reply_posts[post['thread']].append(post)
     for _, post in op_posts.items():
         post['posts'] = reply_posts[post['id']] if post['id'] in reply_posts else []
-    return [op_posts[thread['id']] for thread in threads]
+    return [fuse_thread_and_op_post(thread, op_posts[thread['id']]) for thread in threads]
+
+
+def fuse_thread_and_op_post(thread, op_post):
+    op_post.update(thread)
+    return op_post
 
 
 def get_thread(board_id, id):
