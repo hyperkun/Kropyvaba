@@ -32,7 +32,8 @@ def extract_posts(cursor, board_name):
         'thread': int(post[2] or post[0]),
         'is_op': post[2] is None,
         'time': post[4].replace(tzinfo=pytz.UTC),
-        'board_id': board_name
+        'board_id': board_name,
+        'embed': post[3] if post[8] == 2 else None
     } for post in posts]
 
 

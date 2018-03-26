@@ -1,6 +1,7 @@
 {% load i18n %}
 	{% if post.embed %}
-		{{ post.embed }}
+		<iframe style="float: left;margin: 10px 20px;" width="400" height="250"
+			frameborder="0" id="ytplayer" src="http://www.youtube.com/embed/{{ post.embed }}"></iframe>
     {% else %}
     <div class="files">
     {% load index %}
