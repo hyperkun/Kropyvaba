@@ -1,5 +1,6 @@
 import os
 import ipaddress
+import pytz
 from django.db import models
 from django.utils import timezone
 from config.settings import MEDIA_ROOT
@@ -30,7 +31,7 @@ def extract_posts(cursor, board_name):
         'body_nomarkup': dm.feeda(post[1]),
         'thread': int(post[2] or post[0]),
         'is_op': post[2] is None,
-        'time': post[4],
+        'time': post[4].replace(tzinfo=pytz.UTC),
         'board_id': board_name
     } for post in posts]
 
