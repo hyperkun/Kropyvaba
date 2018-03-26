@@ -48,8 +48,8 @@ def extract_file_info(post, board):
         "type": 0,  # content_type,
         "error": 0,
         "size": int(info[1]),
-        "filename": filler + mime_to_ext(post[0]),
-        "extension": mime_to_ext(post[0]),
+        "filename": filler + mime_to_ext(info[0]),
+        "extension": mime_to_ext(info[0]),
         "file": str(post[0]),
         "thumb": 'test.jpg',
         "is_an_image": post[8] == 1,  # content_type.split('/')[0] == 'image',
@@ -59,7 +59,8 @@ def extract_file_info(post, board):
         "thumbwidth": dims_to_thumb(dims)[0],
         "thumbheight": dims_to_thumb(dims)[1],
         "file_path": '{0}/src/{1}'.format(board, int(post[0])),
-        "thumb_path": '{0}/thumb/{1}'.format(board, int(post[0]))
+        "thumb_path": '{0}/thumb/{1}'.format(board, int(post[0])),
+        "mime": info[0]
     }
 
 
@@ -217,3 +218,12 @@ def get_thread(board_id, id):
         cursor.execute(post_query("select thread from posts_%s where id = %s", board_id), [id])
         thread = cursor.fetchone()
     return thread[0]
+
+
+def get_single_post(board_id, id):
+    with connection.cursor() as cursor:
+        cursor.execute(post_query("select * from posts_%s where id = %s", board_id), [id])
+        try:
+            return extract_posts(cursor, board_id)[0]
+        except IndexError:
+            return None

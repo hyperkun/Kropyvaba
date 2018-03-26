@@ -20,7 +20,7 @@ from django.utils.translation import ugettext as _
 # from django.views.decorators.cache import cache_page
 
 from posts.forms import PostForm
-from config.settings import MEDIA_ROOT
+from config.settings import MEDIA_ROOT, DEBUG
 from posts.models import *
 from config.settings import config  # , CACHE_TTL
 
@@ -242,8 +242,26 @@ def render_catalog(request, board_name):
 @Page404
 def get_media(request, board_name, media_type, path):
     """Deal with media files (sic!)"""
-    root = '{0}{1}/{2}'.format(MEDIA_ROOT, media_type, board_name)
-    return serve(request, path, document_root=root)
+    f_board = get_board(board_name)
+    if f_board is None:
+        raise ObjectDoesNotExist()
+    f_board = f_board['url']
+    f_path = int(path)
+    post = get_single_post(f_board, f_path)
+    if post is None or len(post['files']) == 0:
+        raise ObjectDoesNotExist()
+    partial_path = '{0}/{1}{2}'.format(f_board, f_path, 't' if media_type == 'thumb' else '')
+    if DEBUG:
+        response = serve(request, partial_path, document_root=MEDIA_ROOT)
+    else:
+        response = HttpResponse()
+        response['X-Accel-Redirect'] = '/@content/' + partial_path
+    response['Content-Type'] = post['files'][0]['mime']
+    response['Expires'] = 'Tue Jan 19 2038 03:14:07 UTC'
+    response['Content-Disposition'] = 'inline;filename=hyp-{0}-{1}.{2}'.format(
+        f_board, f_path, post['files'][0]['extension']
+    )
+    return response
 
 
 def make_stats(data):
@@ -345,7 +363,10 @@ def get_ip(request):
 
 
 def get_board(board_uri):
-    return next(board for board in BOARDS if board['url'] == board_uri)
+    try:
+        return next(board for board in BOARDS if board['url'] == board_uri)
+    except StopIteration:
+        return None
 
 
 def get_boards_navlist():
