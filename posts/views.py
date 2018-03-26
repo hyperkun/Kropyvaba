@@ -83,9 +83,8 @@ def render_board(request, board_name, current_page=1):
     :return: board page
     """
     board = get_board(board_name)
-    """posts = get_posts(board)
-    threads = get_threads(posts).order_by('-bump')
-    """
+    if board is None:
+        raise ObjectDoesNotExist()
     threads = get_all_threads(board)
     pages = Paginator(threads, 10)
     threads = pages.page(int(current_page))
