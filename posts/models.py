@@ -33,8 +33,50 @@ def extract_posts(cursor, board_name):
         'is_op': post[2] is None,
         'time': post[4].replace(tzinfo=pytz.UTC),
         'board_id': board_name,
-        'embed': post[3] if post[8] == 2 else None
+        'embed': post[3] if post[8] == 2 else None,
+        'num_files': 0 if post[8] not in [1, 4] else 1,
+        'files': [] if post[8] not in [1, 4] else [extract_file_info(post, board_name)],
     } for post in posts]
+
+
+def extract_file_info(post, board):
+    info = post[3].split()
+    filler = "ХТО НАСРАААВ У БОБІІІІК"
+    dims = (int(info[2]), int(info[3]))
+    return {
+        "name": filler,
+        "type": 0,  # content_type,
+        "error": 0,
+        "size": int(info[1]),
+        "filename": filler + mime_to_ext(post[0]),
+        "extension": mime_to_ext(post[0]),
+        "file": str(post[0]),
+        "thumb": 'test.jpg',
+        "is_an_image": post[8] == 1,  # content_type.split('/')[0] == 'image',
+        "hash": "c5c76d11ff82103d18c3c9767bcb881e",  # TODO hash
+        "width": dims[0],
+        "height": dims[1],
+        "thumbwidth": dims_to_thumb(dims)[0],
+        "thumbheight": dims_to_thumb(dims)[1],
+        "file_path": '{0}/src/{1}'.format(board, int(post[0])),
+        "thumb_path": '{0}/thumb/{1}'.format(board, int(post[0]))
+    }
+
+
+def mime_to_ext(mime):
+    if mime == "image/jpg" or mime == "image/jpeg":
+        return "jpg"
+    elif mime == "image/png":
+        return "png"
+    elif mime == "image/gif":
+        return "gif"
+    else:
+        return "webm"
+
+
+def dims_to_thumb(dims):
+    r = max(dims[0] / 150, dims[1] / 300, 1)
+    return (dims[0] / r, dims[1] / r)
 
 
 def get_stats():
