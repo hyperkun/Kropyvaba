@@ -41,16 +41,17 @@ def extract_posts(cursor, board_name):
 
 def extract_file_info(post, board):
     info = post[3].split()
-    filler = "ХТО НАСРАААВ У БОБІІІІК"
     dims = (int(info[2]), int(info[3]))
+    ext = mime_to_ext(info[0])
+    filename = str(post[0]) + "." + ext
     return {
-        "name": filler,
+        "name": filename,
         "type": 0,  # content_type,
         "error": 0,
         "size": int(info[1]),
-        "filename": filler + mime_to_ext(info[0]),
+        "filename": filename,
         "extension": mime_to_ext(info[0]),
-        "file": str(post[0]),
+        "file": filename,
         "thumb": 'test.jpg',
         "is_an_image": post[8] == 1,  # content_type.split('/')[0] == 'image',
         "hash": "c5c76d11ff82103d18c3c9767bcb881e",  # TODO hash
