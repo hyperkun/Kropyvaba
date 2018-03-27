@@ -77,8 +77,8 @@ def mime_to_ext(mime):
 
 
 def dims_to_thumb(dims):
-    r = max(dims[0] / 150, dims[1] / 300, 1)
-    return (dims[0] / r, dims[1] / r)
+    r = max(dims[0] / 250, dims[1] / 300, 1)
+    return (int(dims[0] / r), int(dims[1] / r))
 
 
 def get_stats():
