@@ -36,6 +36,7 @@ def extract_posts(cursor, board_name):
         'embed': post[3] if post[8] == 2 else None,
         'num_files': 0 if post[8] not in [1, 4] else 1,
         'files': [] if post[8] not in [1, 4] else [extract_file_info(post, board_name)],
+        'email': 'sage' if post[13] else '',
     } for post in posts]
 
 
