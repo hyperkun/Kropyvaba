@@ -59,7 +59,7 @@ def render_index(request):
     posts = get_all_last_posts(30)
     if len(posts):
         recent = [PostBreaf(post) for post in posts]
-        stats = get_stats()
+        stats = get_stats(BOARDS)
     else:
         recent = []
         stats = None
@@ -257,70 +257,6 @@ def get_media(request, board_name, media_type, path):
         f_board, f_path, post['files'][0]['extension']
     )
     return response
-
-
-def make_stats(data):
-    """
-    Count posting statistics.
-
-    :param data: posts for statistics
-    :return: Statistics object
-    """
-
-    class Statistic(object):
-        """
-        Object which contain next statistics data:
-
-        Number of all posts;
-        Number of posted threads;
-        Number of posters;
-        Variables with '_per24' prefix -- same things but for last 24 hours
-        """
-
-        def __init__(self, posts):
-            # functions for DRY
-            def count_threads(_posts):
-                """
-                Count number of threads in _posts.
-
-                :param _posts: source data
-                :return: number of threads
-                """
-                return len([post for post in _posts if not post['thread']])
-
-            def count_posters(_posts):
-                """
-                Count number of uniques posters in _posts.
-
-                :param _posts: source data
-                :return: number of posters
-                """
-                return len(set(post['ip'] for post in _posts))
-
-            # getting time info
-            past = datetime.utcnow() + timedelta(hours=-24)
-            stamp = timegm(past.timetuple())
-            # total objects
-            boards_posts = []
-            for board in PostBreaf.boards:
-                posts_id = []
-                for post in posts:
-                    if post['board_id'] == board['id']:
-                        posts_id.append(post['id'])
-                    else:
-                        posts_id.append(0)
-                boards_posts.append(max(posts_id))
-            self.total_posts = sum(boards_posts)
-            self.total_threads = count_threads(posts)
-            self.posters = count_posters(posts)
-            # objects for last 24 hours
-            last_posts = [post for post in posts if post['time'] >= stamp]
-            self.posts_per24 = len(last_posts)
-            self.threads_per24 = count_threads(last_posts)
-            self.posters_per24 = count_posters(last_posts)
-
-    stats = Statistic(data)
-    return stats
 
 
 def get_posts(board):

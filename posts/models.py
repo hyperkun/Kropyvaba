@@ -82,8 +82,27 @@ def dims_to_thumb(dims):
     return (int(dims[0] / r), int(dims[1] / r))
 
 
-def get_stats():
-    return None
+def get_stats(boards):
+    with connection.cursor() as cursor:
+        def get_posts_count(board, where=''):
+            cursor.execute("select count(*) from posts_%s %s" % (board['url'], where))
+            return cursor.fetchone()[0]
+        def get_posters(where=''):
+            cursor.execute("select count(distinct b.a) from (" +
+                " UNION ".join("select ip as a from posts_%s %s" % (board['url'], where) for board in boards) +
+                ") as b")
+            return cursor.fetchone()[0]
+        w_thread = "WHERE thread is null"
+        w_per24 = "WHERE creation > now() at time zone 'utc' - interval '1' day"
+        w_per24_thread = w_per24 + " AND thread is null"
+        return {
+            'total_posts': sum(get_posts_count(board) for board in boards),
+            'total_threads': sum(get_posts_count(board, w_thread) for board in boards),
+            'posters': get_posters(),
+            'posts_per24': sum(get_posts_count(board, w_per24) for board in boards),
+            'threads_per24': sum(get_posts_count(board, w_per24_thread) for board in boards),
+            'posters_per24': get_posters(w_per24),
+        }
 
 
 class Demarkuper(HTMLParser):
