@@ -174,6 +174,12 @@ def get_all_threads(board):
         return extract_threads(cursor, board['url'])
 
 
+def get_single_thread(board, id):
+    with connection.cursor() as cursor:
+        cursor.execute(thread_single_query("select * from threads_%s where op=%s", board['url']), [id])
+        return extract_threads(cursor, board['url'])
+
+
 def extract_threads(cursor, board_name):
     threads = cursor.fetchall()
     return [{
@@ -183,17 +189,23 @@ def extract_threads(cursor, board_name):
     } for thread in threads]
 
 
-def get_all_on_board_posts_for_threads(threads):
+def get_all_posts_for_threads(threads, on_board_only):
     if len(threads) == 0:
-        return
+        return []
     assert all(thread['board'] == threads[0]['board'] for thread in threads)
     board = threads[0]['board']
     with connection.cursor() as cursor:
         in_str = ','.join([str(thread['id']) for thread in threads])
-        cursor.execute(board_posts_query(
-            "select * from posts_%s where id in (%s) or (thread in (%s) and on_board) order by creation asc",
-            board,
-            in_str))
+        if on_board_only:
+            cursor.execute(board_posts_query(
+                "select * from posts_%s where id in (%s) or (thread in (%s) and on_board) order by creation asc",
+                board,
+                in_str))
+        else:
+            cursor.execute(thread_posts_query(
+                "select * from posts_%s where id in (%s) or thread in (%s) order by creation asc",
+                board,
+                in_str))
         posts = extract_posts(cursor, board)
     op_posts = {}
     reply_posts = {}

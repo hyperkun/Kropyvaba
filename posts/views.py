@@ -88,7 +88,7 @@ def render_board(request, board_name, current_page=1):
     threads = get_all_threads(board)
     pages = Paginator(threads, 10)
     threads = pages.page(int(current_page))
-    threads = get_all_on_board_posts_for_threads(threads)
+    threads = get_all_posts_for_threads(threads, True)
     if request.method == 'POST':
         json_response = 'json_response' in request.POST
         agreed_with_rules = 'rules' in request.POST
@@ -140,9 +140,8 @@ def render_thread(request, board_name, thread_id):
     """
     board = get_board(board_name)
     boards = get_boards_navlist()
-    board.url = board.uri
-    post = Post.objects.filter(board=board).get(id=thread_id)
-    post.posts = Post.objects.filter(board=board).filter(thread=post.id)
+    post = get_single_thread(board, thread_id)
+    post = get_all_posts_for_threads(post, False)
     if request.method == 'POST':
         if 'delete' in request.POST:
             for key in request.POST.keys():
@@ -205,7 +204,7 @@ def render_thread(request, board_name, thread_id):
         'config': config,
         'board': board,
         'boards': boards,
-        'threads': [post],
+        'threads': post,
         'hr': True,
         'form': post_form,
         'id': 1
@@ -241,10 +240,7 @@ def render_catalog(request, board_name):
 @Page404
 def get_media(request, board_name, media_type, path):
     """Deal with media files (sic!)"""
-    f_board = get_board(board_name)
-    if f_board is None:
-        raise ObjectDoesNotExist()
-    f_board = f_board['url']
+    f_board = get_board(board_name)['url']
     f_path = int(path)
     post = get_single_post(f_board, f_path)
     if post is None or len(post['files']) == 0:
@@ -365,7 +361,7 @@ def get_board(board_uri):
     try:
         return next(board for board in BOARDS if board['url'] == board_uri)
     except StopIteration:
-        return None
+        raise ObjectDoesNotExist()
 
 
 def get_boards_navlist():
