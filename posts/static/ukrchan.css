@@ -50,10 +50,6 @@ header div.subtitle,h1,.theme-stats a.current {
 header div.subtitle br:first-child {
 	display:none;
 }
-.name {
-	visibility:hidden;
-	position:fixed;
-}
 div.banner {
 	margin:15px 0 25px;
 	padding:0 0 2px;

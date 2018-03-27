@@ -37,6 +37,7 @@ def extract_posts(cursor, board_name):
         'num_files': 0 if post[8] not in [1, 4] else 1,
         'files': [] if post[8] not in [1, 4] else [extract_file_info(post, board_name)],
         'email': 'sage' if post[13] else '',
+        'name': '<span style="color:#a00">hyper</span><span style="color:#333">kun</span>' if post[15] is not None else None
     } for post in posts]
 
 
@@ -185,7 +186,8 @@ def extract_threads(cursor, board_name):
     return [{
         'id': int(thread[0]),
         'board': board_name,
-        'subject': thread[10]
+        'subject': thread[10],
+        'omitted': max(0, thread[5] - 6)
     } for thread in threads]
 
 
