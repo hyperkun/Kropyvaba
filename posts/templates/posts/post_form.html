@@ -1,7 +1,7 @@
 {% load i18n %}
 <form name="post" onsubmit="return dopost(this);" enctype="multipart/form-data" action="{{ config.post_url }}" method="post">
 	{% if id %}<input type="hidden" name="thread" value="{{ id }}">{% endif %}
-	<input type="hidden" name="board" value="{{ board.uri }}">
+	<input type="hidden" name="board" value="{{ board.url }}">
 	{% if current_page %}
 		<input type="hidden" name="page" value="{{ current_page }}">
 	{% endif %}
@@ -72,6 +72,12 @@
 			<td>
 				<input type="file" name="file" id="upload_file">
 				<script type="text/javascript">if (typeof init_file_selector !== 'undefined') init_file_selector({{ config.max_images }});</script>
+			</td>
+		</tr>
+		<tr id="video">
+			<th>{% trans "Video" %}</th>
+			<td>
+				{{ form.video }}
 			</td>
 		</tr>
 		{% if not config.field_disable_password %}

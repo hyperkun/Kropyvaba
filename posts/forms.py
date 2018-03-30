@@ -45,6 +45,7 @@ class PostForm(Form):
     password = forms.CharField(max_length=20)
     embed = forms.CharField()
     slug = forms.CharField(max_length=256)
+    video = forms.CharField(required=False)
 
     def process(self, board, _ip, thread):
         """
