@@ -118,6 +118,7 @@ def render_thread(request, board_name, thread_id):
     boards = get_boards_navlist()
     post = get_single_thread(board, thread_id)
     post = get_all_posts_for_threads(post, False)
+    del post[0]["omitted"]
     if request.method == 'POST':
         raise ObjectDoesNotExist()
     context = {
