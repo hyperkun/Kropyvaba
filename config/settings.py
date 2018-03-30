@@ -203,6 +203,7 @@ config = {
     'button_newtopic': "Створити нитку",
     'allow_delete': False,
     'field_disable_password': True,
+    'field_disable_name': True,
     'post_url': 'http://hyperchan.org.ua:8082/api/post?p',
     'slogan': [
         "Український іміджборд",
