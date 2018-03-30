@@ -1,3 +1,3 @@
 [submodule "tools/dollchan"]
 	path = tools/dollchan
-	url = git@github.com:SthephanShinkufag/Dollchan-Extension-Tools.git
+	url = https://github.com/hyperkun/Dollchan-Extension-Tools.git
