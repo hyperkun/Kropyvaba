@@ -90,31 +90,7 @@ def render_board(request, board_name, current_page=1):
     threads = pages.page(int(current_page))
     threads = get_all_posts_for_threads(threads, True)
     if request.method == 'POST':
-        json_response = 'json_response' in request.POST
-        agreed_with_rules = 'rules' in request.POST
-        form = PostForm(request.POST, request.FILES)
-        if agreed_with_rules:
-            if form.is_valid():
-                _ip = get_ip(request)
-                new_post_id = form.process(board_name, _ip, None)
-                if new_post_id:
-                    if json_response:
-                        respond = json.dumps({
-                            'id': new_post_id,
-                            'noko': False,
-                            'redirect': '/' + board_name
-                        })
-                        answer = HttpResponse(
-                            respond,
-                            content_type="application/json"
-                        )
-                    else:
-                        answer = HttpResponseRedirect(
-                            reverse('thread', args=[board_name, new_post_id])
-                        )
-                    return answer
-    else:
-        form = PostForm()
+        raise ObjectDoesNotExist()
     context = {
         'config': config,
         'board': board,
@@ -123,7 +99,7 @@ def render_board(request, board_name, current_page=1):
         'pages': pages,
         'hr': True,
         'index': True,
-        'form': form
+        'form': PostForm()
     }
     return render(request, 'posts/index.html', context)
 
@@ -143,70 +119,14 @@ def render_thread(request, board_name, thread_id):
     post = get_single_thread(board, thread_id)
     post = get_all_posts_for_threads(post, False)
     if request.method == 'POST':
-        if 'delete' in request.POST:
-            for key in request.POST.keys():
-                if key.startswith('delete_'):
-                    post_id = key[7:]
-                    post_to_delete = Post.objects.get(board=board, id=post_id)
-                    if post_to_delete.password == request.POST['password']:
-                        post_to_delete.delete()
-                        return HttpResponseRedirect(
-                            reverse('thread', args=[
-                                board_name,
-                                thread_id
-                            ]))
-        if 'report' in request.POST:
-            for key in request.POST.keys():
-                if key.startswith('delete_'):
-                    post_id = key[7:]
-                    post_to_report = Post.objects.get(board=board, id=post_id)
-                    print(post_to_report)
-                    report = Report(
-                        ip=get_ip(request),
-                        reason=request.POST['reason'],
-                        post=post_to_report
-                    )
-                    report.save(force_insert=True)
-                    return HttpResponseRedirect(
-                        reverse('thread', args=[
-                            board_name,
-                            thread_id
-                        ]))
-        json_response = 'json_response' in request.POST
-        agreed_with_rules = 'rules' in request.POST
-        post_form = PostForm(request.POST, request.FILES)
-        if agreed_with_rules:
-            if post_form.is_valid():
-                _ip = get_ip(request)
-                new_post_id = post_form.process(board_name, _ip, thread_id)
-                if new_post_id:
-                    if json_response:
-                        respond = json.dumps({
-                            'id': new_post_id,
-                            'noko': False,
-                            'redirect': '/' + board_name
-                        })
-                        answer = HttpResponse(
-                            respond,
-                            content_type="application/json"
-                        )
-                    else:
-                        answer = HttpResponseRedirect(
-                            reverse('thread', args=[
-                                board_name,
-                                thread_id
-                            ]) + '#{0}'.format(new_post_id)
-                        )
-                    return answer
-    else:
-        post_form = PostForm()
+        raise ObjectDoesNotExist()
     context = {
         'config': config,
         'board': board,
         'boards': boards,
         'threads': post,
         'hr': True,
-        'form': post_form,
+        'form': PostForm(),
         'id': thread_id
     }
     return render(request, 'posts/page.html', context)
