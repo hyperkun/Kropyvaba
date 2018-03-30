@@ -327,7 +327,7 @@ var script_settings = function(script_name) {
 function init() {
 	init_stylechooser();
 
-	if (document.forms.postcontrols) {
+	if (document.forms.postcontrols && document.forms.postcontrols.password) {
 		document.forms.postcontrols.password.value = localStorage.password;
 	}
 
