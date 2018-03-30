@@ -207,7 +207,7 @@ def render_thread(request, board_name, thread_id):
         'threads': post,
         'hr': True,
         'form': post_form,
-        'id': 1
+        'id': thread_id
     }
     return render(request, 'posts/page.html', context)
 
