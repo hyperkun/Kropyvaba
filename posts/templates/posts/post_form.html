@@ -38,7 +38,7 @@
 				</td>
 			</tr>
 		{% endif %}
-		{% if not config.field_disable_subject %}
+		{% if not id %}
 			<tr>
 				<th>
 					{% trans "Subject" %}
@@ -50,8 +50,6 @@
 						<input id="spoiler" name="spoiler" type="checkbox">
 						<label for="spoiler">{% trans "Spoiler Image" %}</label>
 					{% endif %}
-					<input id="rules" name="rules" type="checkbox" checked>
-					<label for="rules">{% trans "By posting I've agreed with <a href='/about/rules/'>the rules</a>" %}</label>
 				</td>
 			</tr>
 		{% endif %}
@@ -89,6 +87,15 @@
 					{{ form.password }}
 					<span class="unimportant">({% trans 'For file deletion.' %})</span>
 				</td>
+			</tr>
+		{% endif %}
+		{% if id %}
+			<tr>
+				<th>
+					<td>
+						<input accesskey="s" style="margin-left:2px;" type="submit" name="post" value="{% if id %}{{ config.button_reply }}{% else %}{{ config.button_newtopic }}{% endif %}" />
+					</td>
+				</th>
 			</tr>
 		{% endif %}
 	</table>
