@@ -1,6 +1,5 @@
 {% load i18n %}
 <form name="post" onsubmit="return dopost(this);" enctype="multipart/form-data" action="{{ config.post_url }}" method="post">
-	{% csrf_token %}
 	{% if id %}<input type="hidden" name="thread" value="{{ id }}">{% endif %}
 	<input type="hidden" name="board" value="{{ board.uri }}">
 	{% if current_page %}

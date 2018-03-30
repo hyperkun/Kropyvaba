@@ -201,7 +201,9 @@ config = {
     'catalog_link': 'catalog.html',
     'button_reply': "Відповісти",
     'button_newtopic': "Створити нитку",
-    'allow_delete': True,
+    'allow_delete': False,
+    'field_disable_password': True,
+    'post_url': 'http://hyperchan.org.ua:8082/api/post?p',
     'slogan': [
         "Український іміджборд",
         "Насирматри!",
