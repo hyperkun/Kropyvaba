@@ -175,6 +175,34 @@ def convert_to_classic_markup(board_context, markup):
             markup = str_replaced(markup, begin, line_end_pos, replacement)
             line_end_pos = begin + len(replacement)
         begin = min(len(markup), line_end_pos + len(line_end))
+    begin = 0
+    while True:
+        link_pos = markup.find('http', begin)
+        if link_pos == -1:
+            break
+        begin = link_pos + len('http')
+        if begin == len(markup):
+            break
+        if markup[begin] == 's':
+            begin += 1
+        infix = '://'
+        if markup[begin:begin + len(infix)] != infix:
+            continue
+        begin += len(infix)
+        is_empty = True
+        while True:
+            if begin == len(markup):
+                break
+            if markup[begin] == ' ' or markup[begin] == '<':
+                break
+            begin += 1
+            is_empty = False
+        if not is_empty:
+            link = markup[link_pos:begin]
+            quot_link = link.replace('\"', '\\\"')
+            full_link = '<a href="' + quot_link + '">' + link + '</a>'
+            markup = str_replaced(markup, link_pos, begin, full_link)
+            begin = link_pos + len(full_link)
     return markup
 
 
