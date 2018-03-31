@@ -6,10 +6,10 @@
 	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 	<script type='text/javascript'>
 		var active_page = "catalog"
-		  , board_name = "{{ board.uri }}";
+		  , board_name = "{{ board.url }}";
 	</script>
 	{% include 'posts/header.html' %}
-	<title>{{ board.uri }} - {% trans 'Catalog' %}</title>
+	<title>{{ board.url }} - {% trans 'Catalog' %}</title>
 </head>
 <body class="8chan vichan is-not-moderator theme-catalog active-catalog" data-stylesheet="{% if config.default_stylesheet.1 != '' %}{{ config.default_stylesheet.1 }}{% else %}default{% endif %}">
 
@@ -17,7 +17,7 @@
         {% include 'posts/boardlist.html' %}
     </div>
 	<header>
-		<h1>{{ config.title }} (<a href="{{link}}">/{{ board.uri }}/</a>)</h1>
+		<h1>{{ config.title }} (<a href="{{link}}">/{{ board.url }}/</a>)</h1>
 		<div class="subtitle">{{ config.subtitle }}</div>
 	</header>
 
@@ -40,19 +40,19 @@
                 {% for post in recent_posts %}
                         <div class="mix"
                 data-reply="{{ post.reply_count }}"
-				data-bump="{{ post.bump }}"
-				data-time="{{ post.time }}"
+				data-bump="{{ post.bump|date:"c" }}"
+				data-time="{{ post.time|date:"c" }}"
 				data-id="{{ post.id }}"
 				data-sticky="{% if post.sticky %}true{% else %}false{% endif %}"
 				data-locked="{% if post.locked %}true{% else %}false{% endif %}"
 				style="display: inline-block"
 			>
                                 <div class="thread grid-li grid-size-small">
-                                        <a href="{% url 'thread' board.uri post.id %}">
-						{% if post.youtube %}
-							<img src="//img.youtube.com/vi/{{ post.youtube }}/0.jpg"
+                                        <a href="{% url 'thread' board.url post.id %}">
+						{% if post.embed %}
+							<img src="//img.youtube.com/vi/{{ post.embed }}/0.jpg"
 						{% else %}
-							<img src="{% url 'media' board.uri 'src' post.files|first_file %}"
+							<img src="{% url 'media' board.url 'thumb' post.id %}"
 						{% endif %}
                                                  id="img-{{ post.id }}" data-subject="{% if post.subject %}{{ post.subject }}{% endif %}" data-name="{{ post.name }}" data-muhdifference="{{ post.muhdifference }}" class="{{post.board}} thread-image" title="{{ post.bump }}">
                                         </a>

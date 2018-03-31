@@ -206,7 +206,10 @@ def extract_threads(cursor, board_name):
         'id': int(thread[0]),
         'board': board_name,
         'subject': thread[10],
-        'omitted': max(0, thread[5] - 6)
+        'omitted': max(0, thread[5] - 6),
+        'reply_count': thread[5] - 1,
+        'image_count': thread[6],
+        'bump': thread[1].replace(tzinfo=pytz.UTC),
     } for thread in threads]
 
 

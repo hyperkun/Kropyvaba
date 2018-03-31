@@ -144,15 +144,13 @@ def render_catalog(request, board_name):
     """
     board = get_board(board_name)
     boards = get_boards_navlist()
-    posts = get_posts(board)
-    recent_posts = [_ for _ in get_threads(posts).order_by('-bump')]
-    for thread in recent_posts:
-        thread.reply_count = len(get_posts(board).filter(thread=thread.id))
+    threads = get_all_threads(board)
+    threads = get_all_posts_for_threads(threads, True)
     context = {
         'config': config,
         'board': board,
         'boards': boards,
-        'recent_posts': recent_posts,
+        'recent_posts': threads,
         'hr': True
     }
     return render(request, 'posts/catalog.html', context)
@@ -178,26 +176,6 @@ def get_media(request, board_name, media_type, path):
         f_board, f_path, post['files'][0]['extension']
     )
     return response
-
-
-def get_posts(board):
-    """
-    Return post's query.
-
-    :param board: board %)
-    :return: post's query
-    """
-    return Post.objects.filter(board=board)
-
-
-def get_threads(posts):
-    """
-    Return threads objects.
-
-    :param posts: data for filtering
-    :return: threads query
-    """
-    return posts.filter(thread=None)
 
 
 def get_ip(request):
