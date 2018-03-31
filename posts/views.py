@@ -88,7 +88,7 @@ def render_board(request, board_name, current_page=1):
     threads = get_all_threads(board)
     pages = Paginator(threads, 10)
     threads = pages.page(int(current_page))
-    threads = get_all_posts_for_threads(threads, True)
+    threads = get_all_posts_for_threads(threads, PostQueryMode.ON_BOARD_ONLY)
     if request.method == 'POST':
         raise ObjectDoesNotExist()
     context = {
@@ -117,7 +117,7 @@ def render_thread(request, board_name, thread_id):
     board = get_board(board_name)
     boards = get_boards_navlist()
     post = get_single_thread(board, thread_id)
-    post = get_all_posts_for_threads(post, False)
+    post = get_all_posts_for_threads(post, PostQueryMode.ALL)
     del post[0]["omitted"]
     if request.method == 'POST':
         raise ObjectDoesNotExist()
@@ -145,7 +145,7 @@ def render_catalog(request, board_name):
     board = get_board(board_name)
     boards = get_boards_navlist()
     threads = get_all_threads(board)
-    threads = get_all_posts_for_threads(threads, True)
+    threads = get_all_posts_for_threads(threads, PostQueryMode.OP_ONLY)
     context = {
         'config': config,
         'board': board,

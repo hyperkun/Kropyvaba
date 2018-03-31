@@ -1,6 +1,7 @@
 import os
 import ipaddress
 import pytz
+from enum import Enum
 from django.db import models
 from django.utils import timezone
 from config.settings import MEDIA_ROOT
@@ -241,23 +242,35 @@ def extract_threads(cursor, board_name):
     } for thread in threads]
 
 
-def get_all_posts_for_threads(threads, on_board_only):
+class PostQueryMode(Enum):
+    ALL = 0
+    ON_BOARD_ONLY = 1
+    OP_ONLY = 2
+
+def get_all_posts_for_threads(threads, mode):
     if len(threads) == 0:
         return []
     assert all(thread['board'] == threads[0]['board'] for thread in threads)
     board = threads[0]['board']
     with connection.cursor() as cursor:
         in_str = ','.join([str(thread['id']) for thread in threads])
-        if on_board_only:
+        if mode == PostQueryMode.ON_BOARD_ONLY:
             cursor.execute(board_posts_query(
-                "select * from posts_%s where id in (%s) or (thread in (%s) and on_board) order by creation asc",
+                "select * from posts_%s where id in (%s) or (thread in (%s) and on_board)",
+                board,
+                in_str))
+        elif mode == PostQueryMode.ALL:
+            cursor.execute(thread_posts_query(
+                "select * from posts_%s where id in (%s) or thread in (%s)",
+                board,
+                in_str))
+        elif mode == PostQueryMode.OP_ONLY:
+            cursor.execute(catalog_posts_query(
+                "select * from posts_%s where id in (%s)",
                 board,
                 in_str))
         else:
-            cursor.execute(thread_posts_query(
-                "select * from posts_%s where id in (%s) or thread in (%s) order by creation asc",
-                board,
-                in_str))
+            assert False
         posts = extract_posts(cursor, board)
     op_posts = {}
     reply_posts = {}

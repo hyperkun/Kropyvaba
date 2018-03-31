@@ -21,6 +21,10 @@ def thread_posts_query(query, board_url, in_str):
     return query % (board_url, in_str, in_str)
 
 
+def catalog_posts_query(query, board_url, in_str):
+    return query % (board_url, in_str)
+
+
 def post_query(query, board_url):
     return query % (board_url, '%s')
 
