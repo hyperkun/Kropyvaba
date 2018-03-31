@@ -293,11 +293,11 @@ def fuse_thread_and_op_post(thread, op_post):
 
 def get_thread(board_id, id):
     with connection.cursor() as cursor:
-        cursor.execute(post_query("select thread from posts_%s where id = %s", board_id), [id])
+        cursor.execute(post_query("select * from posts_%s where id = %s", board_id), [id])
         thread = cursor.fetchone()
     if thread is None:
         return None
-    return thread[0]
+    return thread[2]
 
 
 def get_single_post(board_id, id):
