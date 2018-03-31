@@ -251,6 +251,8 @@ def get_thread(board_id, id):
     with connection.cursor() as cursor:
         cursor.execute(post_query("select thread from posts_%s where id = %s", board_id), [id])
         thread = cursor.fetchone()
+    if thread is None:
+        return None
     return thread[0]
 
 
