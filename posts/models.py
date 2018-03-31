@@ -282,7 +282,7 @@ def get_all_posts_for_threads(threads, mode):
                 reply_posts[post['thread']] = []
             reply_posts[post['thread']].append(post)
     for _, post in op_posts.items():
-        post['posts'] = reply_posts[post['id']] if post['id'] in reply_posts else []
+        post['posts'] = sorted(reply_posts[post['id']], key=lambda post: post['time']) if post['id'] in reply_posts else []
     return [fuse_thread_and_op_post(thread, op_posts[thread['id']]) for thread in threads]
 
 
