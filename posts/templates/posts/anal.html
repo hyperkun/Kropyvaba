@@ -1,0 +1,20 @@
+{% if config.analytics_yandex %}
+    <!-- Yandex.Metrika counter --> <script type="text/javascript"> (function (d, w, c) { (w[c] = w[c] || []).push(function() { try { w.yaCounter{{ config.analytics_yandex }} = new Ya.Metrika({ id:{{ config.analytics_yandex }}, clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:true, trackHash:true, ut:"noindex" }); } catch(e) { } }); var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () { n.parentNode.insertBefore(s, n); }; s.type = "text/javascript"; s.async = true; s.src = "https://d31j93rd8oukbv.cloudfront.net/metrika/watch_ua.js"; if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); } })(document, window, "yandex_metrika_callbacks"); </script> <noscript><div><img src="https://mc.yandex.ru/watch/{{ config.analytics_yandex }}?ut=noindex" style="position:absolute; left:-9999px;" alt="" /></div></noscript> <!-- /Yandex.Metrika counter -->
+{% endif %}
+{% if config.analytics_google %}
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script>
+if ("dataLayer" in window || "ga" in window) {
+	console.error("anal fucked up.");
+}
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id={{ config.analytics_google }}"></script>
+<script>
+	window.dataLayer = window.dataLayer || [];
+	(function(dataLayer) {
+		function gtag(){dataLayer.push(arguments);}
+		gtag('js', new Date());
+		gtag('config', '{{ config.analytics_google }}');
+	}(window.dataLayer));
+</script>
+{% endif %}
