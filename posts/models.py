@@ -18,9 +18,7 @@ def get_all_last_posts(limit = None):
         posts.extend(extract_posts(cursor, 'b'))
         cursor.execute(last_meta_posts_query("select * from posts_meta order by creation desc limit %s"), [limit])
         posts.extend(extract_posts(cursor, 'meta'))
-    posts = posts[:limit]
-    sorted(posts, key=lambda post: post['time'], reverse=True)
-    return posts
+    return sorted(posts, key=lambda post: post['time'], reverse=True)[:limit]
 
 
 def extract_posts(cursor, board_name):
