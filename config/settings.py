@@ -180,11 +180,8 @@ config = {
     'stylesheets': [['Ukrchan', 'ukrchan.css'], ['Futaba', 'futaba.css']],
     'additional_javascript': [
         'jquery.js',
-        'multi-image.js',
         'style-select.js',
         'dollchan.js',
-        'report.js',
-        'truncate.js',
     ],
     'footer': ['Гіперчан 2014-14880. Використовує vichan та Kropyvaba.'],
     'max_filesize': 40 * 1024 * 1024,  # 40MB
