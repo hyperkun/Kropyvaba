@@ -237,7 +237,7 @@ function dopost(form) {
 }
 
 function citeReply(id, with_link) {
-	var textarea = document.getElementById('body');
+	var textarea = document.getElementById('id_body');
 
 	if (!textarea) return false;
 
@@ -245,17 +245,17 @@ function citeReply(id, with_link) {
 		// IE
 		textarea.focus();
 		var sel = document.selection.createRange();
-		sel.text = '>>' + id + '\n';
+		sel.text = '<' + id + '>\n';
 	} else if (textarea.selectionStart || textarea.selectionStart == '0') {
 		var start = textarea.selectionStart;
 		var end = textarea.selectionEnd;
-		textarea.value = textarea.value.substring(0, start) + '>>' + id + '\n' + textarea.value.substring(end, textarea.value.length);
+		textarea.value = textarea.value.substring(0, start) + '<' + id + '>\n' + textarea.value.substring(end, textarea.value.length);
 
-		textarea.selectionStart += ('>>' + id).length + 1;
+		textarea.selectionStart += ('<' + id + '>').length + 1;
 		textarea.selectionEnd = textarea.selectionStart;
 	} else {
 		// ???
-		textarea.value += '>>' + id + '\n';
+		textarea.value += '<' + id + '>\n';
 	}
 	if (typeof $ != 'undefined') {
 		var select = document.getSelection().toString();
