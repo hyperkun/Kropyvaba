@@ -111,12 +111,13 @@ class Demarkuper(HTMLParser):
 
     def handle_starttag(self, tag, attrs):
         if tag == 'span':
-            self.text += ">>"
+            self.text += "<"
         elif tag == 'br':
             self.text += " "
 
     def handle_endtag(self, tag):
-        pass
+        if tag == 'span':
+            self.text += ">"
 
     def handle_data(self, data):
         self.text += data
@@ -212,7 +213,7 @@ def classic_markup_link(board_id, post_id):
     if op is not None:
         link += '#' + str(post_id)
     return '''<a onclick="highlightReply('{0}', event);\
-            " href="{1}">&gt;&gt;{0}</a>'''.format(post_id, link)
+            " href="{1}">&lt;{0}&gt;</a>'''.format(post_id, link)
 
 
 def get_all_threads(board):
