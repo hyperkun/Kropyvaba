@@ -1,3 +1,7 @@
 [submodule "tools/dollchan"]
 	path = tools/dollchan
 	url = https://github.com/hyperkun/Dollchan-Extension-Tools.git
+[submodule "dollchan"]
+	path = tools/dollchan
+	url = https://github.com/hyperkun/Dollchan-Extension-Tools.git
+	branch = master
