@@ -52,7 +52,7 @@
 						{% if post.embed %}
 							<img src="//img.youtube.com/vi/{{ post.embed }}/0.jpg"
 						{% else %}
-							<img src="{% url 'media' board.url 'thumb' post.id %}"
+							<img src="{% url 'media' post.id 'thumb' %}"
 						{% endif %}
                                                  id="img-{{ post.id }}" data-subject="{% if post.subject %}{{ post.subject }}{% endif %}" data-name="{{ post.name }}" data-muhdifference="{{ post.muhdifference }}" class="{{post.board}} thread-image" title="{{ post.bump }}">
                                         </a>

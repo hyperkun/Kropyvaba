@@ -112,7 +112,9 @@ def render_thread(request, board_name, thread_id):
     """
     board = get_board(board_name)
     boards = get_boards_navlist()
-    post = get_single_thread(board, thread_id)
+    post = get_single_thread(thread_id)
+    if post[0]['board'] != board_name:
+        raise ObjectDoesNotExist()
     post = get_all_posts_for_threads(post, PostQueryMode.ALL)
     del post[0]["omitted"]
     if request.method == 'POST':
@@ -153,23 +155,22 @@ def render_catalog(request, board_name):
 
 
 @Page404
-def get_media(request, board_name, media_type, path):
+def get_media(request, id, media_type):
     """Deal with media files (sic!)"""
-    f_board = get_board(board_name)['url']
-    f_path = int(path)
-    post = get_single_post(f_board, f_path)
+    f_id = int(id)
+    post = get_single_post(f_id)
     if post is None or len(post['files']) == 0:
         raise ObjectDoesNotExist()
-    partial_path = '{0}/{1}{2}'.format(f_board, f_path, 't' if media_type == 'thumb' else '')
+    partial_path = 'attachments/{0}{1}'.format(f_id, 't' if media_type == 'thumb' else '')
     if DEBUG:
         response = serve(request, partial_path, document_root=MEDIA_ROOT)
     else:
         response = HttpResponse()
-        response['X-Accel-Redirect'] = '/@content/' + partial_path
+        response['X-Accel-Redirect'] = '/@content/attachments/' + partial_path
     response['Content-Type'] = post['files'][0]['mime']
     response['Expires'] = 'Tue Jan 19 2038 03:14:07 UTC'
-    response['Content-Disposition'] = 'inline;filename=hyp-{0}-{1}.{2}'.format(
-        f_board, f_path, post['files'][0]['extension']
+    response['Content-Disposition'] = 'inline;filename=hyp-{0}.{1}'.format(
+        f_id, post['files'][0]['extension']
     )
     return response
 
@@ -190,7 +191,7 @@ def get_ip(request):
 
 def get_board(board_uri):
     try:
-        return next(board for board in BOARDS if board['url'] == board_uri)
+        return next(board for board in get_boards() if board['url'] == board_uri)
     except StopIteration:
         raise ObjectDoesNotExist()
 

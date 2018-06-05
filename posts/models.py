@@ -62,8 +62,8 @@ def extract_file_info(post, board):
         "height": dims[1],
         "thumbwidth": dims_to_thumb(dims)[0],
         "thumbheight": dims_to_thumb(dims)[1],
-        "file_path": '{0}/src/{1}'.format(board, int(post[0])),
-        "thumb_path": '{0}/thumb/{1}'.format(board, int(post[0])),
+        "file_path": '{0}/src'.format(int(post[0])),
+        "thumb_path": '{0}/thumb'.format(int(post[0])),
         "mime": info[0]
     }
 
@@ -219,26 +219,26 @@ def classic_markup_link(board_id, post_id):
 
 def get_all_threads(board):
     with connection.cursor() as cursor:
-        cursor.execute(threads_query("select * from threads_%s order by last_bump desc", board['url']))
-        return extract_threads(cursor, board['url'])
+        cursor.execute(threads_query("select * from threads where board = %s order by last_bump desc"), [board['url']])
+        return extract_threads(cursor)
 
 
-def get_single_thread(board, id):
+def get_single_thread(id):
     with connection.cursor() as cursor:
-        cursor.execute(thread_single_query("select * from threads_%s where op=%s", board['url']), [id])
-        return extract_threads(cursor, board['url'])
+        cursor.execute(thread_single_query("select * from threads where op = %s"), [id])
+        return extract_threads(cursor)
 
 
-def extract_threads(cursor, board_name):
+def extract_threads(cursor):
     threads = cursor.fetchall()
     return [{
         'id': int(thread[0]),
-        'board': board_name,
-        'subject': thread[10],
-        'omitted': max(0, thread[5] - 6),
-        'reply_count': thread[5] - 1,
-        'image_count': thread[6],
-        'bump': thread[1].replace(tzinfo=pytz.UTC),
+        'board': thread[1],
+        'subject': thread[11],
+        'omitted': max(0, thread[6] - 6),
+        'reply_count': thread[6] - 1,
+        'image_count': thread[7],
+        'bump': thread[2].replace(tzinfo=pytz.UTC),
     } for thread in threads]
 
 
@@ -256,18 +256,15 @@ def get_all_posts_for_threads(threads, mode):
         in_str = ','.join([str(thread['id']) for thread in threads])
         if mode == PostQueryMode.ON_BOARD_ONLY:
             cursor.execute(board_posts_query(
-                "select * from posts_%s where id in (%s) or (thread in (%s) and on_board)",
-                board,
+                "select * from posts where id in (%s) or (thread in (%s) and on_board)",
                 in_str))
         elif mode == PostQueryMode.ALL:
             cursor.execute(thread_posts_query(
-                "select * from posts_%s where id in (%s) or thread in (%s)",
-                board,
+                "select * from posts where id in (%s) or thread in (%s)",
                 in_str))
         elif mode == PostQueryMode.OP_ONLY:
             cursor.execute(catalog_posts_query(
-                "select * from posts_%s where id in (%s)",
-                board,
+                "select * from posts where id in (%s)",
                 in_str))
         else:
             assert False
@@ -293,18 +290,22 @@ def fuse_thread_and_op_post(thread, op_post):
 
 def get_thread(id):
     with connection.cursor() as cursor:
-        cursor.execute(post_query("select * from posts where id = %s"), [id])
+        cursor.execute(post_query(
+            "select *, (select board from threads where op = id or op = thread) from posts where id = %s"),
+        [id])
         thread = cursor.fetchone()
     if thread is None:
         return None
     return thread[2]
 
 
-def get_single_post(board_id, id):
+def get_single_post(id):
     with connection.cursor() as cursor:
-        cursor.execute(post_query("select * from posts_%s where id = %s", board_id), [id])
+        cursor.execute(post_query(
+            "select *, (select board from threads where op = id or op = thread) from posts where id = %s"),
+        [id])
         try:
-            return extract_posts(cursor, board_id)[0]
+            return extract_posts(cursor, None)[0]
         except IndexError:
             return None
 
