@@ -27,3 +27,7 @@ def post_query(query):
 
 def thread_single_query(query):
     return query
+
+
+def maybe_prefetch_response(request):
+    return None

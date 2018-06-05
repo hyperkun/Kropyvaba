@@ -35,6 +35,9 @@ class Page404(object):
         self.func = func
 
     def __call__(self, *args, **kwargs):
+        prefetch_response = maybe_prefetch_response(args[0])
+        if prefetch_response is not None:
+            return prefetch_response
         try:
             return self.func(*args, **kwargs)
         except ObjectDoesNotExist:
