@@ -10,14 +10,17 @@ from html.parser import HTMLParser
 from posts.owls import *
 from django.core.urlresolvers import reverse
 
+boards = None
+
 def get_all_last_posts(limit = None):
     limit = limit or 9999
     posts = []
     with connection.cursor() as cursor:
-        cursor.execute(last_b_posts_query("select * from posts_b order by creation desc limit %s"), [limit])
-        posts.extend(extract_posts(cursor, 'b'))
-        cursor.execute(last_meta_posts_query("select * from posts_meta order by creation desc limit %s"), [limit])
-        posts.extend(extract_posts(cursor, 'meta'))
+        cursor.execute(
+            last_posts_query("select *, (select board from threads where op = id or op = thread) " +
+                "from posts order by creation desc limit %s"),
+            [limit])
+        posts.extend(extract_posts(cursor, None))
     return sorted(posts, key=lambda post: post['time'], reverse=True)[:limit]
 
 
@@ -26,15 +29,15 @@ def extract_posts(cursor, board_name):
     dm = Demarkuper()
     return [{
         'id': int(post[0]),
-        'body': convert_to_classic_markup(board_name, post[1]),
+        'body': convert_to_classic_markup(board_name or post[16], post[1]),
         'body_nomarkup': dm.feeda(post[1]),
         'thread': int(post[2] or post[0]),
         'is_op': post[2] is None,
         'time': post[4].replace(tzinfo=pytz.UTC),
-        'board_id': board_name,
+        'board_id': board_name or post[16],
         'embed': post[3] if post[8] == 2 else None,
         'num_files': 0 if post[8] not in [1, 4] else 1,
-        'files': [] if post[8] not in [1, 4] else [extract_file_info(post, board_name)],
+        'files': [] if post[8] not in [1, 4] else [extract_file_info(post, board_name or post[16])],
         'email': 'sage' if post[13] else '',
         'name': '<span style="color:#a00">hyper</span><span style="color:#333">kun</span>' if post[15] is not None else None
     } for post in posts]
@@ -83,23 +86,21 @@ def dims_to_thumb(dims):
 
 def get_stats(boards):
     with connection.cursor() as cursor:
-        def get_posts_count(board, where=''):
-            cursor.execute("select count(*) from posts_%s %s" % (board['url'], where))
+        def get_posts_count(where=''):
+            cursor.execute("select count(*) from posts %s" % (where))
             return cursor.fetchone()[0]
         def get_posters(where=''):
-            cursor.execute("select count(distinct b.a) from (" +
-                " UNION ".join("select ip as a from posts_%s %s" % (board['url'], where) for board in boards) +
-                ") as b")
+            cursor.execute("select count(distinct ip) from posts %s" % (where))
             return cursor.fetchone()[0]
         w_thread = "WHERE thread is null"
         w_per24 = "WHERE creation > now() at time zone 'utc' - interval '1' day"
         w_per24_thread = w_per24 + " AND thread is null"
         return {
-            'total_posts': sum(get_posts_count(board) for board in boards),
-            'total_threads': sum(get_posts_count(board, w_thread) for board in boards),
+            'total_posts': get_posts_count(),
+            'total_threads': get_posts_count(w_thread),
             'posters': get_posters(),
-            'posts_per24': sum(get_posts_count(board, w_per24) for board in boards),
-            'threads_per24': sum(get_posts_count(board, w_per24_thread) for board in boards),
+            'posts_per24': get_posts_count(w_per24),
+            'threads_per24': get_posts_count(w_per24_thread),
             'posters_per24': get_posters(w_per24),
         }
 
@@ -207,7 +208,7 @@ def convert_to_classic_markup(board_context, markup):
 
 
 def classic_markup_link(board_id, post_id):
-    op = get_thread(board_id, post_id)
+    op = get_thread(post_id)
     thread_id = op or post_id
     link = reverse('thread', args=[board_id, thread_id])
     if op is not None:
@@ -290,9 +291,9 @@ def fuse_thread_and_op_post(thread, op_post):
     return op_post
 
 
-def get_thread(board_id, id):
+def get_thread(id):
     with connection.cursor() as cursor:
-        cursor.execute(post_query("select * from posts_%s where id = %s", board_id), [id])
+        cursor.execute(post_query("select * from posts where id = %s"), [id])
         thread = cursor.fetchone()
     if thread is None:
         return None
@@ -306,3 +307,12 @@ def get_single_post(board_id, id):
             return extract_posts(cursor, board_id)[0]
         except IndexError:
             return None
+
+def get_boards():
+    global boards
+    if boards is None:
+        with connection.cursor() as cursor:
+            cursor.execute("select * from boards")
+            boards = cursor.fetchall()
+            boards = [{'url': record[0], 'title': record[1]} for record in boards]
+    return boards

@@ -25,10 +25,6 @@ from posts.models import *
 from config.settings import config  # , CACHE_TTL
 
 EMPTY_POST = _('(коментар відсутній)')
-BOARDS = [
-    {'url': 'b', 'title': 'Безлад', 'flags': False},
-    {'url': 'meta', 'title': 'Робота сайту', 'flags': False}
-]
 
 
 class Page404(object):
@@ -59,7 +55,7 @@ def render_index(request):
     posts = get_all_last_posts(30)
     if len(posts):
         recent = [PostBreaf(post) for post in posts]
-        stats = get_stats(BOARDS)
+        stats = get_stats(boards)
     else:
         recent = []
         stats = None
@@ -200,7 +196,8 @@ def get_board(board_uri):
 
 
 def get_boards_navlist():
-    return BOARDS
+    return [{'url': board['url'], 'title': board['title'], 'flags': False}
+        for board in get_boards()]
 
 
 class PostBreaf(object):
