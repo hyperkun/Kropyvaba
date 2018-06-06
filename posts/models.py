@@ -199,6 +199,8 @@ def convert_to_classic_markup(board_context, markup):
             begin += 1
             is_empty = False
         if not is_empty:
+            while markup[begin - 1] in [',', '.', ';', ':', '-']:
+                begin -= 1
             link = markup[link_pos:begin]
             quot_link = link.replace('\"', '\\\"')
             full_link = '<a href="' + quot_link + '">' + link + '</a>'
