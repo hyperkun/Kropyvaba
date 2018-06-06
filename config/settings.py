@@ -201,7 +201,7 @@ config = {
     'allow_delete': False,
     'field_disable_password': True,
     'field_disable_name': True,
-    'post_url': 'http://hyperchan.org.ua/api/post?p',
+    'post_url': 'http://hyperchan.org/api/post?p',
     'slogan': [
         "Український іміджборд",
         "Перша іміджборда у гіпервимірі!",
