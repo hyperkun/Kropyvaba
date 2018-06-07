@@ -161,16 +161,18 @@ def render_catalog(request, board_name):
 def get_media(request, id, media_type):
     """Deal with media files (sic!)"""
     f_id = int(id)
+    is_thumb = media_type == "thumb"
+
     post = get_single_post(f_id)
     if post is None or len(post['files']) == 0:
         raise ObjectDoesNotExist()
-    partial_path = 'attachments/{0}{1}'.format(f_id, 't' if media_type == 'thumb' else '')
+    partial_path = 'attachments/{0}{1}'.format(f_id, 't' if is_thumb else '')
     if DEBUG:
         response = serve(request, partial_path, document_root=MEDIA_ROOT)
     else:
         response = HttpResponse()
         response['X-Accel-Redirect'] = '/@content/' + partial_path
-    response['Content-Type'] = post['files'][0]['mime']
+    response['Content-Type'] = 'image/png' if is_thumb else post['files'][0]['mime']
     response['Expires'] = 'Tue Jan 19 2038 03:14:07 UTC'
     response['Content-Disposition'] = 'inline;filename=hyp-{0}.{1}'.format(
         f_id, post['files'][0]['extension']
