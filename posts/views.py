@@ -169,7 +169,7 @@ def get_media(request, id, media_type):
         response = serve(request, partial_path, document_root=MEDIA_ROOT)
     else:
         response = HttpResponse()
-        response['X-Accel-Redirect'] = '/@content/attachments/' + partial_path
+        response['X-Accel-Redirect'] = '/@content/' + partial_path
     response['Content-Type'] = post['files'][0]['mime']
     response['Expires'] = 'Tue Jan 19 2038 03:14:07 UTC'
     response['Content-Disposition'] = 'inline;filename=hyp-{0}.{1}'.format(
