@@ -2,6 +2,7 @@
 <form name="post" onsubmit="return dopost(this);" enctype="multipart/form-data" action="{{ config.post_url }}" method="post">
 	{% if id %}<input type="hidden" name="thread" value="{{ id }}">{% endif %}
 	<input type="hidden" name="board" value="{{ board.url }}">
+	<input type="hidden" name="m" value="1">
 	{% if current_page %}
 		<input type="hidden" name="page" value="{{ current_page }}">
 	{% endif %}
