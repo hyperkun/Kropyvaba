@@ -2,6 +2,7 @@ import os
 import ipaddress
 import pytz
 from enum import Enum
+from collections import namedtuple
 from django.db import models
 from django.utils import timezone
 from config.settings import MEDIA_ROOT
@@ -12,42 +13,55 @@ from django.core.urlresolvers import reverse
 
 boards = None
 
+def named_tuple_fetch_all(cursor):
+    desc = cursor.description
+    nt_result = namedtuple('Result', [col[0] for col in desc])
+    return [nt_result(*row) for row in cursor.fetchall()]
+
+
 def get_all_last_posts(limit = None):
     limit = limit or 9999
     posts = []
     with connection.cursor() as cursor:
         cursor.execute(
-            last_posts_query("select *, (select board from threads where op = id or op = thread) " +
+            last_posts_query("select *, (select board from threads where op = id or op = thread) as board " +
                 "from posts order by creation desc limit %s"),
             [limit])
         posts.extend(extract_posts(cursor, None))
     return sorted(posts, key=lambda post: post['time'], reverse=True)[:limit]
 
 
+def beautify_custom_sign(custom_sign):
+    if custom_sign == '<b><span style="color:#a00">hyper</span>kun</b>':
+        return '<span style="color:#a00">hyper</span><span style="color:#333">kun</span>'
+    else:
+        return custom_sign
+
+
 def extract_posts(cursor, board_name):
-    posts = cursor.fetchall()
+    posts = named_tuple_fetch_all(cursor)
     dm = Demarkuper()
     return [{
-        'id': int(post[0]),
-        'body': convert_to_classic_markup(board_name or post[16], post[1]),
-        'body_nomarkup': dm.feeda(post[1]),
-        'thread': int(post[2] or post[0]),
-        'is_op': post[2] is None,
-        'time': post[4].replace(tzinfo=pytz.UTC),
-        'board_id': board_name or post[16],
-        'embed': post[3] if post[8] == 2 else None,
-        'num_files': 0 if post[8] not in [1, 4] else 1,
-        'files': [] if post[8] not in [1, 4] else [extract_file_info(post, board_name or post[16])],
-        'email': 'sage' if post[13] else '',
-        'name': '<span style="color:#a00">hyper</span><span style="color:#333">kun</span>' if post[15] is not None else None
+        'id': int(post.id),
+        'body': convert_to_classic_markup(board_name or post.board, post.text),
+        'body_nomarkup': dm.feeda(post.text),
+        'thread': int(post.thread or post.id),
+        'is_op': post.thread is None,
+        'time': post.creation.replace(tzinfo=pytz.UTC),
+        'board_id': board_name or post.board,
+        'embed': post.info if post.type == 2 else None,
+        'num_files': 0 if post.type not in [1, 4] else 1,
+        'files': [] if post.type not in [1, 4] else [extract_file_info(post, board_name or post.board)],
+        'email': 'sage' if post.saged else '',
+        'name': beautify_custom_sign(post.custom_sign)
     } for post in posts]
 
 
 def extract_file_info(post, board):
-    info = post[3].split()
+    info = post.info.split()
     dims = (int(info[2]), int(info[3]))
     ext = mime_to_ext(info[0])
-    filename = str(post[0]) + "." + ext
+    filename = str(post.id) + "." + ext
     return {
         "name": filename,
         "type": 0,  # content_type,
@@ -56,14 +70,14 @@ def extract_file_info(post, board):
         "extension": ext,
         "file": filename,
         "thumb": 'test.jpg',
-        "is_an_image": post[8] == 1,  # content_type.split('/')[0] == 'image',
+        "is_an_image": post.type == 1,  # content_type.split('/')[0] == 'image',
         "hash": "c5c76d11ff82103d18c3c9767bcb881e",  # TODO hash
         "width": dims[0],
         "height": dims[1],
         "thumbwidth": dims_to_thumb(dims)[0],
         "thumbheight": dims_to_thumb(dims)[1],
-        "file_path": '{0}/src'.format(int(post[0])),
-        "thumb_path": '{0}/thumb'.format(int(post[0])),
+        "file_path": '{0}/src'.format(int(post.id)),
+        "thumb_path": '{0}/thumb'.format(int(post.id)),
         "mime": info[0]
     }
 
@@ -293,7 +307,7 @@ def fuse_thread_and_op_post(thread, op_post):
 def get_thread(id):
     with connection.cursor() as cursor:
         cursor.execute(post_query(
-            "select *, (select board from threads where op = id or op = thread) from posts where id = %s"),
+            "select *, (select board from threads where op = id or op = thread) as board from posts where id = %s"),
         [id])
         thread = cursor.fetchone()
     if thread is None:
@@ -304,7 +318,7 @@ def get_thread(id):
 def get_single_post(id):
     with connection.cursor() as cursor:
         cursor.execute(post_query(
-            "select *, (select board from threads where op = id or op = thread) from posts where id = %s"),
+            "select *, (select board from threads where op = id or op = thread) as board from posts where id = %s"),
         [id])
         try:
             return extract_posts(cursor, None)[0]
