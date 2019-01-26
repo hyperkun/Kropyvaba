@@ -116,7 +116,7 @@ def render_thread(request, board_name, thread_id):
     board = get_board(board_name)
     boards = get_boards_navlist()
     post = get_single_thread(thread_id)
-    if post[0]['board'] != board_name:
+    if len(post) == 0 or post[0]['board'] != board_name:
         raise ObjectDoesNotExist()
     post = get_all_posts_for_threads(post, PostQueryMode.ALL)
     del post[0]["omitted"]
