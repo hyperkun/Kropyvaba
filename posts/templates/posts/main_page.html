@@ -54,8 +54,7 @@
 				<div id='boards-table'>
 					{% for board in boards %}
 						<strong>
-							<a href="{% url 'board' board.url %}" title="{{ board.title }}">{{ board.title }}
-								<span class='nsfw'> (99+)</span></a>
+							<a href="{% url 'board' board.url %}" title="{{ board.title }}">{{ board.title }}</a>
 						</strong><br>
 					{% endfor %}
 				</div>
