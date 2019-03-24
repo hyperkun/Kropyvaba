@@ -1,6 +1,7 @@
 import os
 import ipaddress
 import pytz
+import time
 from enum import Enum
 from collections import namedtuple
 from django.db import models
@@ -12,6 +13,93 @@ from posts.owls import *
 from django.core.urlresolvers import reverse
 
 boards = None
+
+ARABIC_CONV_MAP = {
+    # cyrilic:
+    "а": "ا‬",
+    "б": "ب",
+    "в": "وْ‬‬",
+    "г": "ع",
+    "ґ": "غ",
+    "д": "د",
+    "е": "ط",
+    "є": "طٓ",
+    "ж": "ج",
+    "з": "ز",
+    "и": "ی",
+    "й": "ہْ",
+    "і": "یٓ",
+    "ї": "ي",
+    "к": "ق",
+    "л": "ل",
+    "м": "م",
+    "н": "ن",
+    "о": "ہ",
+    "п": "پ‬",
+    "р": "ر",
+    "с": "س",
+    "т": "ت",
+    "у": "و‬‬",
+    "ф": "ف",
+    "х": "خ",
+    "ц": "ص",
+    "ч": "صٓ",
+    "ш": "ش",
+    "щ": "شٓ",
+    "ь": "ھ",
+    "ю": "وٓ",
+    "я": "آ",
+    "ё": "ہْ" + "ہ",
+    "ы": "ی",
+    "э": "ط",
+    "ъ": "ہْ",
+    # latin:
+    "a": "ا‬",
+    "b": "ب",
+    "c": "ص",
+    "d": "د",
+    "e": "ط",
+    "f": "ف",
+    "g": "ج",
+    "h": "ع",
+    "i": "یٓ",
+    "j": "ش",
+    "k": "ك",
+    "l": "ل",
+    "m": "م",
+    "n": "ن",
+    "o": "ہ",
+    "p": "پ",
+    "q": "ق",
+    "r": "ر",
+    "s": "س",
+    "t": "ت",
+    "u": "و‬‬",
+    "v": "وْ",
+    "w": "ؤ",
+    "x": "ك" + "س",
+    "y": "ی",
+    "z": "ز",
+    # digits:
+    "0": "٠",
+    "1": "١",
+    "2": "٢",
+    "3": "٣",
+    "4": "٤",
+    "5": "٥",
+    "6": "٦",
+    "7": "٧",
+    "8": "٨",
+    "9": "٩",
+    # punctuation:
+    "?": "؟",
+    ",": "،",
+    ";": "؛",
+    # apostrophes:
+    "'": "ء", # ASCII
+    "ʼ": "ء", # U+02BC
+    "’": "ء", # U+2019
+}
 
 def named_tuple_fetch_all(cursor):
     desc = cursor.description
@@ -39,11 +127,12 @@ def beautify_custom_sign(custom_sign):
 
 
 def extract_posts(cursor, board_name):
+    should_use_arabic = 1554066000 <= time.time() < 1554152400
     posts = named_tuple_fetch_all(cursor)
-    dm = Demarkuper()
+    dm = Demarkuper(should_use_arabic)
     return [{
         'id': int(post.id),
-        'body': convert_to_classic_markup(board_name or post.board, post.text),
+        'body': convert_to_classic_markup(board_name or post.board, post.text, should_use_arabic),
         'body_nomarkup': dm.feeda(post.text),
         'thread': int(post.thread or post.id),
         'is_op': post.thread is None,
@@ -120,9 +209,10 @@ def get_stats(boards):
 
 
 class Demarkuper(HTMLParser):
-    def __init__(self):
+    def __init__(self, should_use_arabic):
         super().__init__()
         self.text = ""
+        self.should_use_arabic = should_use_arabic
 
     def handle_starttag(self, tag, attrs):
         if tag == 'span':
@@ -135,7 +225,10 @@ class Demarkuper(HTMLParser):
             self.text += ">"
 
     def handle_data(self, data):
-        self.text += data
+        if self.should_use_arabic:
+            self.text += arabic_conv(data)
+        else:
+            self.text += data
 
     def feeda(self, str):
         self.text = ""
@@ -147,7 +240,7 @@ def str_replaced(str, begin, end, replacement):
     return str[:begin] + replacement + str[end:]
 
 
-def convert_to_classic_markup(board_context, markup):
+def convert_to_classic_markup(board_context, markup, should_use_arabic=False):
     begin = 0
     while True:
         prefix = '<span class=l data-post='
@@ -194,14 +287,26 @@ def convert_to_classic_markup(board_context, markup):
     while True:
         link_pos = markup.find('http', begin)
         if link_pos == -1:
+            if should_use_arabic:
+                replacement = arabic_conv(markup[begin:len(markup)])
+                markup = str_replaced(markup, begin, len(markup), replacement)
             break
+        if should_use_arabic:
+            replacement = arabic_conv(markup[begin:link_pos])
+            markup = str_replaced(markup, begin, link_pos, replacement)
         begin = link_pos + len('http')
         if begin == len(markup):
+            if should_use_arabic:
+                replacement = arabic_conv(markup[link_pos:len(markup)])
+                markup = str_replaced(markup, link_pos, len(markup), replacement)
             break
         if markup[begin] == 's':
             begin += 1
         infix = '://'
         if markup[begin:begin + len(infix)] != infix:
+            if should_use_arabic:
+                replacement = arabic_conv(markup[link_pos:begin + len(infix)])
+                markup = str_replaced(markup, link_pos, begin + len(infix), replacement)
             continue
         begin += len(infix)
         is_empty = True
@@ -220,7 +325,35 @@ def convert_to_classic_markup(board_context, markup):
             full_link = '<a href="' + quot_link + '">' + link + '</a>'
             markup = str_replaced(markup, link_pos, begin, full_link)
             begin = link_pos + len(full_link)
+        elif should_use_arabic:
+            replacement = arabic_conv(markup[link_pos:begin])
+            markup = str_replaced(markup, link_pos, begin, replacement)
     return markup
+
+
+def arabic_conv(strn):
+    ret = ""
+    in_tag = False
+    in_ent = False
+    for c in strn:
+        if c == "<":
+            in_tag = True
+        if c == ">":
+            in_tag = False
+        if in_tag:
+            ret = ret + c
+            continue
+        if c == "&":
+            in_ent = True
+        if c == ";":
+            in_ent = False
+            ret = ret + c
+            continue
+        if in_ent:
+            ret = ret + c
+        else:
+            ret = ret + (ARABIC_CONV_MAP.get(c.lower(), c))
+    return ret
 
 
 def classic_markup_link(board_id, post_id):
