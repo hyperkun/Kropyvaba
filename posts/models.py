@@ -127,7 +127,7 @@ def beautify_custom_sign(custom_sign):
 
 
 def extract_posts(cursor, board_name):
-    should_use_arabic = 1554066000 <= time.time() < 1554152400
+    should_use_arabic = is_arabic_time()
     posts = named_tuple_fetch_all(cursor)
     dm = Demarkuper(should_use_arabic)
     return [{
@@ -354,6 +354,10 @@ def arabic_conv(strn):
         else:
             ret = ret + (ARABIC_CONV_MAP.get(c.lower(), c))
     return ret
+
+
+def is_arabic_time():
+    return 1554066000 <= time.time() < 15541524000
 
 
 def classic_markup_link(board_id, post_id):

@@ -1,4 +1,6 @@
 {% load static %}
+{% load index %}
+{% use_arabic as use_a %}
 <!doctype html>
 <html>
 	<head>
@@ -34,37 +36,37 @@
 			</select>
 		</div>
 		<header>
-			<h1>Гіперчан</h1>
-			<div class="subtitle">{{ slogan }}</div>
+			<h1>{{ "Гіперчан"|mca }}</h1>
+			<div class="subtitle" {% if use_a %}dir="rtl"{% endif %}>{{ slogan|mca }}</div>
 			<div class="box logo">
-				{% load index %}
 				<!--<img src="{\% static 'randlogo/' \%}{\% random_logo \%}">-->
 			</div>
 		</header>
 		<div id='main-content'>
-			<p>
-				<strong><a href="https://drama.kropyva.ch/Гіперчан">Гіперчан</a></strong> -
-				український <a href="https://drama.kropyva.ch/Іміджборд">іміджборд</a>, де
+			<p {% if use_a %}dir="rtl"{% endif %}>
+				<strong><a href="https://drama.kropyva.ch/Гіперчан">{{ "Гіперчан"|mca }}</a></strong> -
+				{{ "український"|mca }} <a href="https://drama.kropyva.ch/Іміджборд">{{ "іміджборд"|mca }}</a
+				>{% filter mca %}, де
 				кожен може дописувати чи ділитися контентом без реєстрації.
 				Тут є дошки присвячені різним темам, від модерації сайту до будь-якої теми взагалі.
-				Не соромся, заходь на ту, що тебе цікавить!
+				Не соромся, заходь на ту, що тебе цікавить!{% endfilter %}
 			</p>
 			<div class="post reply container">
-				<label><strong>Дошки</strong></label>
+				<label><strong>{{ "Дошки"|mca }}</strong></label>
 				<div id='boards-table'>
 					{% for board in boards %}
 						<strong>
-							<a href="{% url 'board' board.url %}" title="{{ board.title }}">{{ board.title }}</a>
+							<a href="{% url 'board' board.url %}" title="{{ board.title|mca }}">{{ board.title|mca }}</a>
 						</strong><br>
 					{% endfor %}
 				</div>
 			</div>
-			<div class="post reply container">
-				<label><strong>Останні пости</strong></label>
+			<div class="post reply container" {% if use_a %}dir="rtl"{% endif %}>
+				<label><strong>{{ "Останні пости"|mca }}</strong></label>
 				<ul>
 					{% for post in recent_posts %}
-						<li>
-							<strong>{{ post.board_name }}</strong>:
+						<li {% if use_a %}style="text-align:right;"{% endif %}>
+							<strong>{{ post.board_name|mca }}</strong>:
 							<a href="
 								{% if post.thread %}
 									{% url 'thread' post.board_url post.thread %}#{{post.id}}

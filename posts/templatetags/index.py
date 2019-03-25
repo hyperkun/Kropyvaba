@@ -8,6 +8,7 @@ from math import floor, log
 from django import template
 import simplejson as json
 from config.settings import config, STATIC_ROOT
+from posts.models import arabic_conv, is_arabic_time
 
 register = template.Library()
 
@@ -72,3 +73,17 @@ def get_flag(body):
     else:
         flag = 'a1'
     return 'flags/{}.png'.format(flag.lower())
+
+
+@register.filter(name='mca')
+def maybe_convert_to_arabic(raw_str):
+    should_use_arabic = is_arabic_time()
+    if should_use_arabic:
+        return arabic_conv(raw_str)
+    else:
+        return raw_str
+
+
+@register.simple_tag
+def use_arabic():
+    return is_arabic_time()
