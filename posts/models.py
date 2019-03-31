@@ -387,7 +387,7 @@ def extract_threads(cursor):
     return [{
         'id': int(thread[0]),
         'board': thread[1],
-        'subject': thread[12],
+        'subject': None if thread[12] is None else ''.join([ARABIC_CONV_MAP.get(c.lower(), c) for c in thread[12]]),
         'omitted': max(0, thread[6] - 6),
         'reply_count': thread[6] - 1,
         'image_count': thread[7],
