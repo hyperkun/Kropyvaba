@@ -85,7 +85,11 @@
 					<li>Доступно ниток: {{ stats.total_threads }}</li>
 					<li>Ниток за добу: {{ stats.threads_per24 }}</li>
 					<li>Дописувачів: {{ stats.posters }}</li>
-					<li>Дописувачів за добу: {{ stats.posters_per24 }}</li>
+					<li>Дописувачів за добу: {% if stats.posters_per24 <= 3 and stats.posts_per24 > 1 %}
+						≤3
+					{% else %}
+						{{ stats.posters_per24 }}
+					{% endif %}</li>
 				</ul>
 			</div>
 		</div>
