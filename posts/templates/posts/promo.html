@@ -1,0 +1,21 @@
+{% load i18n %}
+<div class="boardlist promo">
+    Нова дошка з новою функціональністю — через 444444 секунд.
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var last_counter = null;
+        setInterval(function() {
+            var counter = 1569877200 - Math.floor((new Date()).getTime() / 1000);
+            if (last_counter === counter) {
+                return;
+            }
+            var ending = (counter % 100 >= 10 && counter % 100 <= 19) ? "" :
+                ((counter % 10 == 1) ? "у" :
+                ((counter % 10 >= 2 && counter % 10 <= 4) ? "и" : ""));
+            document.querySelector(".boardlist.promo").innerText =
+                "Нова дошка з новою функціональністю — через " + counter + " секунд" + ending + ".";
+            last_counter = counter;
+        }, 100);
+    });
+</script>

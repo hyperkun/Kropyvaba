@@ -15,7 +15,8 @@
 
 	<div class="boardlist">
         {% include 'posts/boardlist.html' %}
-    </div>
+	</div>
+	{% include 'posts/promo.html' %}
 	<header>
 		<h1>{{ config.title }} (<a href="{{link}}">/{{ board.url }}/</a>)</h1>
 		<div class="subtitle">{{ config.subtitle }}</div>
