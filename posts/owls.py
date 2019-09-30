@@ -25,6 +25,10 @@ def post_query(query):
     return query
 
 
+def post_thread_query(query):
+    return query
+
+
 def thread_single_query(query):
     return query
 

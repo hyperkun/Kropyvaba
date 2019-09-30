@@ -13,6 +13,11 @@ from django.core.urlresolvers import reverse
 
 boards = None
 
+POSTS_QUERY_GEO_APPENDIX = \
+    "(select iso_code         from geo_countries where visible_country = geo_countries.id) as country_iso, " +\
+    "(select visible_ukr_name from geo_countries where visible_country = geo_countries.id) as country_name, " +\
+    "(select visible_ukr_name from geo_cities where visible_city = geo_cities.id) as city_name"
+
 def named_tuple_fetch_all(cursor):
     desc = cursor.description
     nt_result = namedtuple('Result', [col[0] for col in desc])
@@ -24,8 +29,8 @@ def get_all_last_posts(limit = None):
     posts = []
     with connection.cursor() as cursor:
         cursor.execute(
-            last_posts_query("select *, (select board from threads where op = id or op = thread) as board " +
-                "from posts order by creation desc limit %s"),
+            last_posts_query("select *, (select board from threads where op = id or op = thread) as board, " +
+                POSTS_QUERY_GEO_APPENDIX + " from posts order by creation desc limit %s"),
             [limit])
         posts.extend(extract_posts(cursor, None))
     return sorted(posts, key=lambda post: post['time'], reverse=True)[:limit]
@@ -53,7 +58,10 @@ def extract_posts(cursor, board_name):
         'num_files': 0 if post.type not in [1, 4] else 1,
         'files': [] if post.type not in [1, 4] else [extract_file_info(post, board_name or post.board)],
         'email': 'sage' if post.saged else '',
-        'name': beautify_custom_sign(post.custom_sign)
+        'name': beautify_custom_sign(post.custom_sign),
+        'country_iso': post.country_iso,
+        'country_name': post.country_name,
+        'city_name': post.city_name
     } for post in posts]
 
 
@@ -272,15 +280,15 @@ def get_all_posts_for_threads(threads, mode):
         in_str = ','.join([str(thread['id']) for thread in threads])
         if mode == PostQueryMode.ON_BOARD_ONLY:
             cursor.execute(board_posts_query(
-                "select * from posts where id in (%s) or (thread in (%s) and on_board)",
+                "select *, " + POSTS_QUERY_GEO_APPENDIX + " from posts where id in (%s) or (thread in (%s) and on_board)",
                 in_str))
         elif mode == PostQueryMode.ALL:
             cursor.execute(thread_posts_query(
-                "select * from posts where id in (%s) or thread in (%s)",
+                "select *, " + POSTS_QUERY_GEO_APPENDIX + " from posts where id in (%s) or thread in (%s)",
                 in_str))
         elif mode == PostQueryMode.OP_ONLY:
             cursor.execute(catalog_posts_query(
-                "select * from posts where id in (%s)",
+                "select *, " + POSTS_QUERY_GEO_APPENDIX + " from posts where id in (%s)",
                 in_str))
         else:
             assert False
@@ -306,19 +314,20 @@ def fuse_thread_and_op_post(thread, op_post):
 
 def get_thread(id):
     with connection.cursor() as cursor:
-        cursor.execute(post_query(
-            "select *, (select board from threads where op = id or op = thread) as board from posts where id = %s"),
+        cursor.execute(post_thread_query(
+            "select (select op from threads where op = id or op = thread) from posts where id = %s"),
         [id])
         thread = cursor.fetchone()
     if thread is None:
         return None
-    return thread[2]
+    return thread[0]
 
 
 def get_single_post(id):
     with connection.cursor() as cursor:
         cursor.execute(post_query(
-            "select *, (select board from threads where op = id or op = thread) as board from posts where id = %s"),
+            "select *, (select board from threads where op = id or op = thread) as board, " +
+            POSTS_QUERY_GEO_APPENDIX + " from posts where id = %s"),
         [id])
         try:
             return extract_posts(cursor, None)[0]

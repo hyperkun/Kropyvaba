@@ -62,13 +62,3 @@ def format_size(size_in_bytes):
     p = pow(1024, i)
     s = round(size_in_bytes / p, 2)
     return "{0} {1}B".format(s, size_name[i])
-
-
-@register.filter(name='get_flag')
-def get_flag(body):
-    flag_name = re.search(r"<tinyboard flag>(?P<flag>\w+)</tinyboard>", body)
-    if flag_name:
-        flag = flag_name.group('flag')
-    else:
-        flag = 'a1'
-    return 'flags/{}.png'.format(flag.lower())

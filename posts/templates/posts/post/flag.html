@@ -1,8 +1,8 @@
 {% load index %}
 {% load static %}
-{% if board.flags %}
+{% if post.country_iso %}
 	<img
-	class="flag" src="{% static post.body_nomarkup|get_flag %}"
+	class="flag" src="{% static 'flags/'|add:post.country_iso|add:'.png' %}"
 		style="
 			{% if post.modifiers %}
 				{{ post.modifiers }}
@@ -10,5 +10,11 @@
 				{{ config.flag_style }}
 			{% endif %}
 		"
+		alt="{{ post.country_name }}" title="{{ post.country_name }}"
 	>
+	{% if post.city_name %}
+		{{ post.city_name }}
+	{% else %}
+		{{ post.country_name }}
+	{% endif %}
 {% endif %}
