@@ -6,15 +6,22 @@
     document.addEventListener("DOMContentLoaded", function() {
         var last_counter = null;
         setInterval(function() {
+            var new_promo = false;
             var counter = 1569877200 - Math.floor((new Date()).getTime() / 1000);
             if (last_counter === counter) {
                 return;
             }
+            if (counter < 0) {
+                counter = 1570035600 - Math.floor((new Date()).getTime() / 1000);
+                new_promo = true;
+            }
             var ending = (counter % 100 >= 10 && counter % 100 <= 19) ? "" :
                 ((counter % 10 == 1) ? "у" :
                 ((counter % 10 >= 2 && counter % 10 <= 4) ? "и" : ""));
-            document.querySelector(".boardlist.promo").innerText =
-                "Нова дошка з новою функціональністю — через " + counter + " секунд" + ending + ".";
+            document.querySelector(".boardlist.promo").innerHTML =
+                new_promo ?
+                ("Нова дошка <a href='/p/'>/p/</a> створена. Вона буде увімкнена через " + counter + " секунд" + ending + ".") :
+                ("Нова дошка з новою функціональністю — через " + counter + " секунд" + ending + ".");
             last_counter = counter;
         }, 100);
     });
