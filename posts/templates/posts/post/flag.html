@@ -2,7 +2,7 @@
 {% load static %}
 {% if post.country_iso %}
 	<img
-	class="flag" src="{% static 'flags/'|add:post.country_iso|add:'.png' %}"
+	class="flag" src="{% static 'flags/'|add:post.country_iso|add:'.png'|lower %}"
 		style="
 			{% if post.modifiers %}
 				{{ post.modifiers }}
