@@ -243,7 +243,7 @@ def classic_markup_link(board_id, post_id):
 
 def get_all_threads(board):
     with connection.cursor() as cursor:
-        cursor.execute(threads_query("select * from threads where board = %s order by last_bump desc"), [board['url']])
+        cursor.execute(threads_query("select * from threads where board = %s order by sticky desc, last_bump desc"), [board['url']])
         return extract_threads(cursor)
 
 
@@ -254,15 +254,17 @@ def get_single_thread(id):
 
 
 def extract_threads(cursor):
-    threads = cursor.fetchall()
+    threads = named_tuple_fetch_all(cursor)
     return [{
-        'id': int(thread[0]),
-        'board': thread[1],
-        'subject': thread[12],
-        'omitted': max(0, thread[6] - 6),
-        'reply_count': thread[6] - 1,
-        'image_count': thread[7],
-        'bump': thread[2].replace(tzinfo=pytz.UTC),
+        'id': int(thread.op),
+        'board': thread.board,
+        'subject': thread.topic,
+        'omitted': max(0, thread.count_all - 6),
+        'reply_count': thread.count_all - 1,
+        'image_count': thread.count_img,
+        'bump': thread.last_bump.replace(tzinfo=pytz.UTC),
+        'sticky': thread.sticky,
+        'locked': thread.locked
     } for thread in threads]
 
 
