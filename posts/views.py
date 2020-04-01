@@ -9,6 +9,8 @@ from datetime import datetime, timedelta
 
 import simplejson as json
 
+from math import ceil
+
 # django stuff
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
@@ -62,9 +64,13 @@ def render_index(request):
     else:
         recent = []
         stats = None
+    boards_doubled = [
+        [boards[i], boards[i + len(boards) // 2]] if (len(boards) % 2 == 0) or (i != ceil(len(boards) / 2) - 1) else [boards[i]]
+        for i in range(int(ceil(len(boards) / 2)))]
     context = {
         'config': config,
         'boards': boards,
+        'boards_doubled': boards_doubled,
         'slogan': random.choice(config['slogan']),
         'stats': stats,
         'recent_posts': recent[:30]

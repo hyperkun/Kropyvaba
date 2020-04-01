@@ -1,0 +1,9 @@
+.box-outer{border:1px solid;zoom:100%;margin-bottom:.5em;padding-bottom:.5em;width:680px;}
+.box-outer1{border:0px solid;zoom:100%;margin-bottom:.5em;padding: 10px 10px 10px 10px;width:800px;text-align: left;margin:10px;}
+.boxbar{padding-left:.5em;line-height:2em; position:relative;font-size:70%;}
+.boxbar{background: #800;color: #fff;} {background: #fff;color: #000;}
+.boxcontent{padding:.5em;padding-top:.25em;padding-bottom:0;line-height:130%}
+.boxcontent1{padding:.5em;padding-top:.25em;padding-bottom:0;line-height:130%;text-align: left;}
+.boxcontent {font-size:100%;}
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td{margin:0;}
+

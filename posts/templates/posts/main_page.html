@@ -1,112 +1,613 @@
 {% load static %}
-<!doctype html>
-<html>
-	<head>
-		{% include 'posts/header.html' %}
-		<meta charset="utf-8">
-		<title>{{ config.title }}</title>
-		<link rel="stylesheet" media="screen" href="{% static config.recent %}"/>
-	</head>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"> <head>
+	 <title>УЧАН - Український іміджборд</title> <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+	<meta name="keywords" content="imageboard, image board, uchan, учан, у-чан, u-chan, 4chan, 2ch, iichan, chan, 0chan, чан, імейджбоард,іміджбоард, іміджборд, демотиватор, демотиваторы, українська, українські, демотиватори українською, приколи, фотошоп, фішки, фишки, афоризми, картинки, москалі, гумор, чорний гумор, релігія, жарти, жарти на релігійну тематику, україна, росія, політика, форум, балачка, сарказм, еротика, фото, зображення, юмор"/>
+	<meta name="description" content="УЧАН - Справжній Український іміджборд, місце де складні речі пояснються цікавими зображеннями і доступними словами. Анонімний форум без реєстрації."/>
+	<meta name="robots" content="index, follow"/>
+	<link rel="shortcut icon" href="{% static 'uchan/wakaba.ico' %}"/>
+	<style type="text/css"> body { margin: 0; padding: 8px; margin-bottom: auto; } blockquote blockquote { margin-left: 0em } form { margin-bottom: 0px } form .trap { display:none } .postarea { text-align: center } .postarea table { margin: 0px auto; text-align: left } .thumb { border: none; float: left; margin: 2px 20px } .nothumb { float: left; background: #eee; border: 2px dashed #aaa; text-align: center; margin: 2px 20px; padding: 1em 0.5em 1em 0.5em; } .reply blockquote, blockquote :last-child { margin-bottom: 0em } .reflink a { color: inherit; text-decoration: none } .reply .filesize { margin-left: 20px } .userdelete { float: right; text-align: center; white-space: nowrap } .replypage .replylink { display: none } .addthisBlock {padding: 5px;} .barsadmin{text-decoration:none;} .spoiler {color: #000000 !important;background: #000000 !important;}
+	.spoiler:hover{color: #ffffff !important;background: #000000 !important;}</style>
+	<link rel="stylesheet" type="text/css" href="{% static 'uchan/global.css' %}"/>
+	<link rel="stylesheet" type="text/css" href="{% static 'uchan/chan.css' %}" title="Chan"/>
+	<link rel="alternate stylesheet" type="text/css" href="{% static 'uchan/aya.css' %}" title="Aya"/>
+	<link rel="alternate stylesheet" type="text/css" href="{% static 'uchan/burichan.css' %}" title="Burichan"/>
+	<link rel="alternate stylesheet" type="text/css" href="{% static 'uchan/cirno blue.css' %}" title="Cirno Blue"/>
+	<link rel="alternate stylesheet" type="text/css" href="{% static 'uchan/futaba.css' %}" title="Futaba"/>
+	<link rel="alternate stylesheet" type="text/css" href="{% static 'uchan/marisa black.css' %}" title="Marisa Black"/>
+	<link rel="alternate stylesheet" type="text/css" href="{% static 'uchan/nazrin gray.css' %}" title="Nazrin Gray"/>
+	<link rel="alternate stylesheet" type="text/css" href="{% static 'uchan/photon.css' %}" title="Photon"/>
+	<link rel="alternate stylesheet" type="text/css" href="{% static 'uchan/reimu red.css' %}" title="Reimu Red"/>
+	<script type="text/javascript">var style_cookie="wakabastyle";</script>
+	<script type="text/javascript" src="{% static 'uchan/prototype.js' %}"></script>
+	<script type="text/javascript" src="{% static 'uchan/wakaba.js' %}"></script>
+	<script type="text/javascript" src="{% static 'uchan/23705.user.js' %}"></script>
+	<script type="text/javascript" src="{% static 'uchan/51875.user.old.js' %}"></script>
+	<!--<script type="text/javascript" src="/ajax_func_main.js"></script>-->
+	
+	<script type="text/javascript">
+	
+	
+	// how long the entire fade process requires
+	var fadeRate = 700; // msecs
+	// intializations
+	var currentContent = '';
+	var nextContent;
+	
+	function fade_to(numpost) {
+	
+	var rate = fadeRate/100;
+	for (var i = 0; i < 101; i++) 
+		{
+	// queue fading commands
+	setTimeout('fadeIn(' + i + ', ' + numpost + ')', rate*i);
+		}
+	
+	}
+	
+	function fadeIn(i,numpost) {
+	// increase opacity of in-fading, next content
+	var s = document.getElementById('uchan_post_'+numpost).style;
+	s.opacity=''+.01*i;
+	}
+	
+	function show_post(numpost) {
+	//document.getElementById('LastPosts').innerHTML = res.d;
+	fade_to(numpost);
+	document.getElementById('uchan_post_'+numpost).style.display = 'block';
+	}
+	
+	function hide_post(numpost) {
+	//document.getElementById('LastPosts').innerHTML = res.d;
+	document.getElementById('uchan_post_'+numpost).style.display = 'none';
+	}
+	
+	</script>
+	
+		  <script type="text/javascript">
+			 var currentHighlighted = null;
+			 var languages =
+			  { 'af' : 'Afrikaans',
+				'sq' : 'Albanian',
+				'am' : 'Amharic',
+				'ar' : 'Arabic',
+				'hy' : 'Armenian',
+				'az' : 'Azerbaijani',
+				'eu' : 'Basque',
+				'be' : 'Belarusian',
+				'bn' : 'Bengali',
+				'bh' : 'Bihari',
+				'br' : 'Breton',
+				'bg' : 'Bulgarian',
+				'my' : 'Burmese',
+				'ca' : 'Catalan',
+				'chr' : 'Cherokee',
+				'zh' : 'Chinese',
+				'zh-CN' : 'Chinese Simplified',
+				'zh-TW' : 'Chinese Traditional',
+				'co' : 'Corsican',
+				'hr' : 'Croatian',
+				'cs' : 'Czech',
+				'da' : 'Danish',
+				'dv' : 'Dhivehi',
+				'nl' : 'Dutch',
+				'en' : 'English',
+				'eo' : 'Esperanto',
+				'et' : 'Estonian',
+				'fo' : 'Faroese',
+				'tl' : 'Filipino',
+				'fi' : 'Finnish',
+				'fr' : 'French',
+				'fy' : 'Frisian',
+				'gl' : 'Galician',
+				'ka' : 'Georgian',
+				'de' : 'German',
+				'el' : 'Greek',
+				'gu' : 'Gujarati',
+				'ht' : 'Haitian_Creole',
+				'iw' : 'Hebrew',
+				'hi' : 'Hindi',
+				'hu' : 'Hungarian',
+				'is' : 'Icelandic',
+				'id' : 'Indonesian',
+				'iu' : 'Inuktitut',
+				'ga' : 'Irish',
+				'it' : 'Italian',
+				'ja' : 'Japanese',
+				'jw' : 'Javanese',
+				'kn' : 'Kannada',
+				'kk' : 'Kazakh',
+				'km' : 'Khmer',
+				'ko' : 'Korean',
+				'ku' : 'Kurdish',
+				'ky' : 'Kyrgyz',
+				'lo' : 'Lao',
+				'la' : 'Latin',
+				'lv' : 'Latvian',
+				'lt' : 'Lithuanian',
+				'lb' : 'Luxembourgish',
+				'mk' : 'Macedonian',
+				'ms' : 'Malay',
+				'ml' : 'Malayalam',
+				'mt' : 'Maltese',
+				'mi' : 'Maori',
+				'mr' : 'Marathi',
+				'mn' : 'Mongolian',
+				'ne' : 'Nepali',
+				'no' : 'Norwegian',
+				'oc' : 'Occitan',
+				'or' : 'Oriya',
+				'ps' : 'Pashto',
+				'fa' : 'Persian',
+				'pl' : 'Polish',
+				'pt' : 'Portuguese',
+				'pt-PT' : 'Portuguese Portugal',
+				'pa' : 'Punjabi',
+				'qu' : 'Quechua',
+				'ro' : 'Romanian',
+				'ru' : 'Russian',
+				'sa' : 'Sanskrit',
+				'gd' : 'Scots Gaelic',
+				'sr' : 'Serbian',
+				'sd' : 'Sindhi',
+				'si' : 'Sinhalese',
+				'sk' : 'Slovak',
+				'sl' : 'Slovenian',
+				'es' : 'Spanish',
+				'su' : 'Sundanese',
+				'sw' : 'Swahili',
+				'sv' : 'Swedish',
+				'syr' : 'Syriac',
+				'tg' : 'Tajik',
+				'ta' : 'Tamil',
+				'tt' : 'Tatar',
+				'te' : 'Telugu',
+				'th' : 'Thai',
+				'bo' : 'Tibetan',
+				'to' : 'Tonga',
+				'tr' : 'Turkish',
+				'uk' : 'Ukrainian',
+				'ur' : 'Urdu',
+				'uz' : 'Uzbek',
+				'ug' : 'Uighur',
+				'vi' : 'Vietnamese',
+				'cy' : 'Welsh',
+				'yi' : 'Yiddish',
+				'yo' : 'Yoruba' };
+	
+			 google.load("language", "1");
+	
+			 function getLanguage()
+			 {
+				var language;
+	
+				if (navigator.userLanguage != undefined)
+				   language = navigator.userLanguage;
+	
+				else
+				   language = navigator.language;
+	
+				if (language == undefined)
+				   return(undefined);
+	
+				return(stripCountryCode(language))
+			 }
+	
+			 function stripCountryCode(code)
+			 {
+				return(code.toString().match(/^[a-z]+/))
+			 }
+	
+			 function languageName(code)
+			 {
+				if (languages[stripCountryCode(code)] == undefined)
+				   return(code);
+	
+				return(languages[stripCountryCode(code)]);
+			 }
+	
+			 function translate(postnumber)
+			 {
+				var postText;
+				var button;
+				var targetLanguage;
+	
+				targetLanguage = getLanguage();
+	
+				if (targetLanguage == undefined)
+				{
+				   alert("Couldn't determine browser language");
+				   return;
+				}
+	
+				postText = $('post_text_' + postnumber);
+				postTextOld = $('post_text_' + postnumber);
+				button = $('translate_button_' + postnumber);
+				button.src = '/button-working.gif';
+	
+	
+				var text = postText.innerHTML;
+	
+	function make_text(a)
+	{
+		var c=[];
+		a=encodeURIComponent(a);
+		if (a.length>1500)
+		{
+		var re = new RegExp("(.{1000,1500}((%3C%2Fp%3E)(%3C%2Fli%3E)|([\.]{1})|([\!]{1})|(%3F)|(%0A)|(%20)))", "ig");
+		a = a.replace(re, "$1d349HJklFJDlksnH");
+		var my_array=a.split("d349HJklFJDlksnH");
+	
+	   for (var n=0; n<my_array.length; n++)
+		   {
+		   c[n]=decodeURIComponent(my_array[n]);
+		   }
+		return c;
+		}
+		else
+		{
+		c[0]=decodeURIComponent(a);
+		return c;
+		}
+	}
+	
+	mytool_array = make_text(text);
+	
+	function pausecomp(millis)
+	{
+	var date = new Date();
+	var curDate = null;
+	
+	do { curDate = new Date(); }
+	while(curDate-date < millis);
+	} 
+	
+	function isArray(obj) {
+		return obj.constructor == Array;
+	}
+	
+	 if (isArray(mytool_array))
+		{
+		var textarraysize =  mytool_array.length;
+		text = mytool_array[0];
+		}
+	
+	
+	google.language.translate(text, '', targetLanguage,
+	   function(result)
+		{
+		  $('translation_info_' + postnumber).style.display = 'block';
+		  if (result.error != null)
+			{
+			$('translation_info_' + postnumber).innerHTML =
+				result.error.code + ': ' + result.error.message;
+				button.style.display = 'none';
+			}
+			// else if (result.detectedSourceLanguage == targetLanguage)
+			// {
+			// $('translation_info_' + postnumber).innerHTML =  "It's already " + languageName(targetLanguage);
+			// mydetectedSourceLanguage = result.detectedSourceLanguage;
+			// }
+			else
+			{
+			postText.innerHTML = postTextOld.innerHTML + " <p style='color: white; font-weight: bold; margin-bottom: 6px; text-shadow: 0px 2px 2px black; display: block;'>-&gt;</p>\r\n";
+			$('translation_info_' + postnumber).innerHTML =
+				languageName(result.detectedSourceLanguage) + " -> " + languageName(targetLanguage);
+	
+			for (var id=0;id<textarraysize;id++)
+				{
+				 google.language.translate(mytool_array[id], '', targetLanguage, function(result)
+					{
+					   if (result.error != null)
+						  {
+						 //   postText.innerHTML = 
+						 //       postText.innerHTML + "<span style='color: white; font-weight: bold; margin-bottom: 6px; text-shadow: 0px 2px 2px black; display: block;'>" + result.error.code + ': ' + result.error.message + "</span>";
+						  }
+						else
+						  {
+							resu = result.translation;
+							var re = new RegExp("(\<)(.+?)(\>)", "ig");
+							resu = resu.replace(re, "<!--$2-->");
+							var re = new RegExp("(\<)([a-zA-Z0-9]+?)(\>)", "ig");
+							resu = resu.replace(re, "<!--$2-->");
+							var re = new RegExp("(\<\/)([a-zA-Z0-9]+?)(\>)", "ig");
+							resu = resu.replace(re, "<!--/$2-->");
+							postText.innerHTML = 
+								postText.innerHTML + ' ' + resu;
+						  }
+					});
+	
+				}
+	
+				google.language.translate('', '', '',
+				   function(result)
+				   {
+				   fixed_text = postText.innerHTML;
+				   var re = new RegExp("(\<\!--)(.+?)(--\>)", "ig");
+				   fixed_text = fixed_text.replace(re, "<$2>");
+				   var re = new RegExp("(\<\!--)([a-zA-Z0-9]+?)(--\>)", "ig");
+				   fixed_text = fixed_text.replace(re, "<$2>");
+				   var re = new RegExp("(\<\!--\/)([a-zA-Z0-9]+?)(--\>)", "ig");
+				   fixed_text = fixed_text.replace(re, "</$2>");
+				   //document.getElementById('post_text_' + postnumber).innerHTML =  fixed_text;
+				   postText.innerHTML =  fixed_text;
+				   button.style.display = 'none';
+				   });
+	
+			}
+		});
+	
+	}
+	
+		  </script>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	</head>  
 	<body>
-		<div class="boardlist">
-			<span class="sub" data-description="0">
-				[ <a href="{% url 'index' %}">/Головна/</a> ]
-			</span>
-			<span class="sub" data-description="1">
-				[ <a href="about/help/">/ЧаПи/</a> ]
-			</span>
-			<span class="sub" data-description="2">
-				[ <a href="/bugs/index.html" title="Пропозиції та претензії">/зауваження/</a> ]
-			</span>
-			<span class="sub" data-description="3">
-				[ <a href="about/mobile/" title="Для власників смартфонів">/мобільна версія/</a> ]
-			</span>
-			<span class="sub" data-description="4">
-				[ <a href="https://twitter.com/hyperchan_org">/твіттер/</a> ]
-			</span>
-			<select class='mobile-only' onChange="window.location.href=this.value">
-				<option value="">Навігація</option>
-				<option value="/about/help/">/ЧаПи/</option>
-				<option value="/bugs/index.html">/зауваження/</option>
-				<option value="/about/mobile/">/мобільна версія/</option>
-				<option value="/about/donate/">/пожертвувати/</option>
-				<option value="https://twitter.com/hyperchan_org">/твіттер/</option>
-			</select>
-		</div>
-		{% include 'posts/promo.html' %}
-		<header>
-			<h1>Гіперчан</h1>
-			<div class="subtitle">{{ slogan }}</div>
-			<div class="box logo">
-				{% load index %}
-				<!--<img src="{\% static 'randlogo/' \%}{\% random_logo \%}">-->
+	 <div class="adminbar">
+	 [{% for board in boards %}
+	 <a class="barsadmin" href="{% url 'board' board.url %}" title="{{ board.title }}"><b>/{{ board.url }}</b></a>
+	 {% endfor %}] -
+
+	 [<a class="barsadmin" href="http://twitter.com/hyperchan_org" title="Uchan Twitter">twt</a> / 
+	 <a class="barsadmin" href="/rss/" title="Стрічка новин всіх дошок">rss</a> / 
+	 <a class="barsadmin" href="/img/" title="Галерея">img</a> / 
+	 <a class="barsadmin" href="/lt/" title="Список тредів">lt</a> / 
+	 <a class="barsadmin" href="/lp/" title="Список повідомлень">lp</a> / 
+	 <a class="barsadmin" href="/s/" title="Пошук">s&nbsp;</a>]
+	 </div>
+	
+	<br/>
+	<div class="adminbar"> [<a class="barsadmin" href="//uchan.to/"><b>В UCHAN</b></a>]  [<a class="barsadmin" href="https://dramatica.org.ua/"><b>УкрДраматика</b></a>] [<a class="barsadmin" href="http://demotivators.org.ua/">До демотиваторів</a>] [<a class="barsadmin" href="http://demotivators.org.ua/b/" title="PHPBB Форум">PHPBB /b/алачка</a>] [<a class="barsadmin" href="https://4chan.org/" target="_blank"><i>4chan</i></a>] </div> 
+	<br/>
+	<div class="adminbar">  [<a class="barsadmin" href="javascript:set_stylesheet('Aya')">Aya</a>]  [<a class="barsadmin" href="javascript:set_stylesheet('Burichan')">Burichan</a>]  [<a class="barsadmin" href="javascript:set_stylesheet('Chan')">Chan</a>]  [<a class="barsadmin" href="javascript:set_stylesheet('Cirno Blue')">Cirno Blue</a>]  [<a class="barsadmin" href="javascript:set_stylesheet('Futaba')">Futaba</a>]  [<a class="barsadmin" href="javascript:set_stylesheet('Marisa Black')">Marisa Black</a>]  [<a class="barsadmin" href="javascript:set_stylesheet('Nazrin Gray')">Nazrin Gray</a>]  [<a class="barsadmin" href="javascript:set_stylesheet('Photon')">Photon</a>]  [<a class="barsadmin" href="javascript:set_stylesheet('Reimu Red')">Reimu Red</a>] </div> 
+	
+	<div class="logo">  <!--<img  src="/nr.png" width="150">--> {% load index %} <img src="{% static 'uchan/uchan.png' %}" alt="УЧАН - Український іміджборд" style="margin-left:-120px;"/> <img style="margin-left:26px; border: 1px solid rgb(0, 0, 0);" height="100" width="300" src="{% static 'uchan/banners/' %}{% random_logo %}" alt="Випадковий банер Учана" border="0"/>
+	 <a href="/rss/" target="_blank" title="RSS Учана, останні повідомлення всіх дошок. Анонімуси, які не підпишуться будуть віддані на поталу геям-москалям."><img src="{% static 'uchan/rss_uchan_mini.png' %}" alt="RSS Учана, останні повідомлення всіх дошок." border="0"/>
+	</a> 
+	<br/>
+	УЧАН - Український іміджборд </div><br/>
+	<center>
+		 <div class="box-outer">
+		   <div>
+			 <div class="boxbar">
+			  <h2>Що таке Учан?</h2>
+			 </div>
+			 <div class="boxcontent">
+	<p>Учан це простий форум орієнтований на обмін зображеннями, де кожен може залишати повідомлення. Формат сайту Учан наслідує популярний американський сайт 4chan (який в свою чергу наслідує японський Futaba Channel). Користувачам не потрібно реєструватись для того, щоб стати частиною громади. </p>
+			   <br/>
+	<a class="barsadmin"><b><strong>Зображення є доповненням до повідомлення, підкреcлює думку автора або акцентує на ньому увагу.</strong></b></a> <a class="barsadmin"><i>Ви одразу можете долучитись до дискусії </i></a><a class="barsadmin" href="/ptu/#contribution">(дізнайтесь про <b><strong>Позитивний внесок</b></strong>),</a><a class="barsadmin"><i> не потрібно реєструватись чи вчиняти інші дії.</i></a><br/>
+	
+				<br/>
+	
+			   <p>Прочитайте <a class="barsadmin" href="/rules/">Правила</a> перед написанням повідомлень та відвідайте <a class="barsadmin" href="/ptu/">ПТУ</a> якщо хочете дізнатись більше про субкультуру іміджборд.</p>
+	   
+			   <br/>
+	  
+			   <p>Про Учан на інших сайтах: <a class="barsadmin" href="//dramatica.org.ua/%D0%A3%D1%87%D0%B0%D0%BD">Драматика</a>, <a class="barsadmin" href="//lurkmore.ru/Uchan" rel="nofollow">Луркмор</a>.</p>
+			 </div>
+		   </div>
 			</div>
-		</header>
-		<div id='main-content'>
-			<p>
-				<strong><a href="https://drama.kropyva.ch/Гіперчан">Гіперчан</a></strong> -
-				український <a href="https://drama.kropyva.ch/Іміджборд">іміджборд</a>, де
-				кожен може дописувати чи ділитися контентом без реєстрації.
-				Тут є дошки присвячені різним темам, від модерації сайту до будь-якої теми взагалі.
-				Не соромся, заходь на ту, що тебе цікавить!
-			</p>
-			<div class="post reply container">
-				<label><strong>Дошки</strong></label>
-				<div id='boards-table'>
-					{% for board in boards %}
-						<strong>
-							<a href="{% url 'board' board.url %}" title="{{ board.title }}">{{ board.title }}</a>
-						</strong><br>
-					{% endfor %}
-				</div>
+	</center>
+	
+	<center>
+		 <div class="box-outer">
+		   <div>
+			 <div class="boxbar">
+			  <h2>Розділи (дошки) Учана</h2>
+			 </div>
+			 <div class="boxcontent1">
+	<table width="90%" align="center" border="0">
+	<tbody>
+		{% for board_pair in boards_doubled %}
+		<tr>
+			{% for board in board_pair %}
+			<td><a class="barsadmin" href="{% url 'board' board.url %}">/{{ board.url }}/ - {{ board.title }}</a></td>
+			{% endfor %}
+		</tr>
+		{% endfor %}
+	</tbody>
+	</table>
+			 </div>
+		   </div>
 			</div>
-			<div class="post reply container">
-				<label><strong>Останні пости</strong></label>
-				<ul>
-					{% for post in recent_posts %}
-						<li>
-							<strong>{{ post.board_name }}</strong>:
-							<a href="
-								{% if post.thread %}
-									{% url 'thread' post.board_url post.thread %}#{{post.id}}
-								{% else %}
-									{% url 'thread' post.board_url post.id %}
-								{% endif %}">
-								{{ post.snippet }}
-							</a>
-						</li>
-					{% endfor %}
-				</ul>
-			</div>
-			<div class="post reply container">
-				<label><strong>Статистика</label></strong>
-				<ul id='stats-table'>
-					<li>Усього повідомлень: {{ stats.total_posts }}</li>
-					<li>Повідомлень за добу: {{ stats.posts_per24 }}</li>
-					<li>Доступно ниток: {{ stats.total_threads }}</li>
-					<li>Ниток за добу: {{ stats.threads_per24 }}</li>
-					<li>Дописувачів: {{ stats.posters }}</li>
-					<li>Дописувачів за добу: {% if stats.posters_per24 <= 3 and stats.posts_per24 > 1 %}
-						≤3
-					{% else %}
-						{{ stats.posters_per24 }}
-					{% endif %}</li>
-				</ul>
-			</div>
-		</div>
-		<hr/>
-		<footer>
-			<label>Гіперчан 2014-14880. Використовує vichan та Kropyvaba.</label>
-			<br>
-		</footer>
-		<script type="text/javascript">
-			var styles = {
-				{% for name, uri in config.stylesheets %}'{{ name }}' : '{% static uri %}',
-				{% endfor %}
-			}; onready(init);
-		</script>
-		<script type="text/javascript">
-			ready();
-		</script>
-	</body>
-</html>
+	</center><!--<center><div>Дружні іміджборди: <a class="barsadmin" href='http://www.srbijachan.org/' title="Сербська">http://www.srbijachan.org/</a></div></center>-->
+	<center>
+		 <div class="box-outer1"><center>
+	
+	<script>
+	function googletrans_click() {
+	window.location = ('https://translate.google.com/#auto|en|'+encodeURIComponent(location.href));
+	return false;
+	}
+	if (top.location != location) {
+	top.location.href = document.location.href;
+	}
+	</script>
+	
+	
+	<a href="//translate.google.com/#auto|en|https%3A%2F%2Fuchan.org.ua%2F" onclick="return googletrans_click()" target="_blank" style="text-decoration:none;" title="Натисни для перекладу. Сlick to translate.">Технології <span style="white-space: nowrap;"><img src="//translate.googleapis.com/translate_static/img/mini_google.png" border="0" alt="Натисни для перекладу. Сlick to translate."><b>Translate</b></span></a>
+	
+	</center><br/>
+	<style>
+	.Library
+	{
+		background: url("/static/uchan/wakaba.ico") no-repeat;
+	}
+	
+	/*---LIBRARY---*/
+	ul.texts li
+	{
+		list-style-image: url("/static/uchan/view.png");
+		font-size: 12px;
+		font-family: monospace !important;
+	}
+	ul.texts li u
+	{
+		text-decoration: none;
+		color: #777;
+		font-size: 11px;
+		margin-right: 5px;
+	}
+	ul.texts li.Thread
+	{
+		list-style-image: url("/static/uchan/TextGroup.png");
+	}
+	
+	ul.texts li.Post
+	{
+		list-style-image: url("/static/uchan/TextLink.gif");
+	}
+	
+	ul.texts li.Author, ul.authors li
+	{
+		color: #777;
+		list-style-type: none;
+		list-style-image: none;
+		background: url("/static/uchan/rozen.png") no-repeat;
+		background-position: 0 0;
+		padding-left: 20px;
+		padding-right: 20px;
+		padding-bottom: 20px;
+		padding-top: 1px;
+		margin-top: 5px;
+		margin-right: 20px;
+	}
+	ul.texts li.Text
+	{
+		font-weight: normal;
+	}
+	</style>
+	<br/><br/>
+	<ul class="texts"><li class="Author">&nbsp;&nbsp;&nbsp;<span title="Після натискання перезавантажте сторінку">Лялькоскрипт</span> <button type="button" class="post_button" style="color: rgb(0, 0, 0) ! important; font-weight: bold;" onclick="setCookie('doll_on', '1');">On</button> &nbsp;<button type="button" class="post_button" style="color: rgb(0, 0, 0) ! important; font-weight: bold;" onclick="setCookie('doll_on', '0');">Off</button></li>
+	</ul>
+	
+	
+	<!--<center>-->
+	<br/><br/>
+	<!--<a href="/zaibalo/" target="_blank"><img width="120" src="/zaibalo/zaib185x85.gif" border="0" title="Журнал Заїбало"></a> 
+	<img src="http://s07.flagcounter.com/count/bDPe/bg=EDDAD2/txt=000000/border=CCCCCC/columns=5/maxflags=20/viewers=3/labels=1/pageviews=1/" alt="free counters" border="0"></center>-->
+	
+	
+	<script type="text/javascript">
+	
+	var window_location;
+	if (window.location == '') {
+		window_location = window.opera;
+	} else {
+		window_location = window.location;
+	}
+	   // window_location.host=='uchan.org.ua' || window_location.host=='www.uchan.org.ua' ||
+	if (window_location.host=='учан.com' || window_location.host=='www.учан.com' || 
+		window_location.host=='xn--80a0aqq.com' || window_location.host=='www.xn--80a0aqq.com' ||
+		window_location.host=='www.uchan.org.ua' ||
+		window_location.host=='uchan.org.ua'
+		) {
+		var path;
+		var hash;
+		if (window_location.pathname=='' || window_location.pathname=='/') {
+			path = '';
+		} else {
+			if (window_location.search=='') {
+				path = ''+window_location.pathname;
+			} else {
+				path = ''+window_location.pathname + '' + window_location.search;
+			}
+		}
+		
+		if (window_location.hash=='') {
+			hash = '';
+		} else {
+			hash = ''+window_location.hash;
+		}
+		
+		
+		window_location.replace(window_location.protocol + '//' + 'uchan.to' + path + hash);
+	}
+	
+	</script>
+	
+	</div>
+	
+	<br/>
+	
+	<div class="adminbar">
+	
+	 
+	 [<a class="barsadmin" href="javascript:set_stylesheet('Aya')">Aya</a>]
+	 
+	 [<a class="barsadmin" href="javascript:set_stylesheet('Burichan')">Burichan</a>]
+	 
+	 [<a class="barsadmin" href="javascript:set_stylesheet('Chan')">Chan</a>]
+	 
+	 [<a class="barsadmin" href="javascript:set_stylesheet('Cirno Blue')">Cirno Blue</a>]
+	 
+	 [<a class="barsadmin" href="javascript:set_stylesheet('Futaba')">Futaba</a>]
+	 
+	 [<a class="barsadmin" href="javascript:set_stylesheet('Marisa Black')">Marisa Black</a>]
+	 
+	 [<a class="barsadmin" href="javascript:set_stylesheet('Nazrin Gray')">Nazrin Gray</a>]
+	 
+	 [<a class="barsadmin" href="javascript:set_stylesheet('Photon')">Photon</a>]
+	 
+	 [<a class="barsadmin" href="javascript:set_stylesheet('Reimu Red')">Reimu Red</a>]
+	 
+	 -
+	 [<a class="barsadmin" href="/b/wakaba.pl?task=admin">Управління</a>]
+	 </div>
+	
+	 <br/>
+	 <div class="adminbar">
+		[<a class="barsadmin" href="//uchan.to/"><b>В UCHAN</b></a>]  [<a class="barsadmin" href="https://dramatica.org.ua/"><b>УкрДраматика</b></a>] [<a class="barsadmin" href="http://demotivators.org.ua/">До демотиваторів</a>] [<a class="barsadmin" href="http://demotivators.org.ua/b/" title="PHPBB Форум">PHPBB /b/алачка</a>] [<a class="barsadmin" href="https://4chan.org/" target="_blank"><i>4chan</i></a>]
+	 </div>
+	
+	 <br/>
+	 <div class="adminbar"> 
+		[{% for board in boards %}
+		<a class="barsadmin" href="{% url 'board' board.url %}" title="{{ board.title }}"><b>/{{ board.url }}</b></a>
+		{% endfor %}] -
+   
+		[<a class="barsadmin" href="http://twitter.com/hyperchan_org" title="Uchan Twitter">twt</a> / 
+		<a class="barsadmin" href="/rss/" title="Стрічка новин всіх дошок">rss</a> / 
+		<a class="barsadmin" href="/img/" title="Галерея">img</a> / 
+		<a class="barsadmin" href="/lt/" title="Список тредів">lt</a> / 
+		<a class="barsadmin" href="/lp/" title="Список повідомлень">lp</a> / 
+		<a class="barsadmin" href="/s/" title="Пошук">s&nbsp;</a>]
+	 </div>
+	 <br/>
+	 <noindex>
+	<!-- Ukrainian Banner Network 728х90 START -->
+	<center><script>
+	//<!--
+	ubn_user = "82790";
+	ubn_page = "1";
+	ubn_pid = Math.round((Math.random() * (10000000 - 1)));
+	document.write("<iframe src='//banner.kiev.ua/cgi-bin/bi.cgi?h" +
+	ubn_user + "&amp;"+ ubn_pid + "&amp;" + ubn_page + 
+	"&amp;12' frameborder=0 vspace=0 hspace=0 " +
+	" width=728 height=90 marginwidth=0 marginheight=0 scrolling=no>");
+	document.write("<a href='//banner.kiev.ua/cgi-bin/bg.cgi?" +
+	ubn_user + "&amp;"+ ubn_pid + "&amp;" + ubn_page + "' target=_top>");
+	document.write("<img border=0 src='//banner.kiev.ua/" +
+	"cgi-bin/bi.cgi?i" + ubn_user + "&amp;" + ubn_pid + "&amp;" + ubn_page +
+	"&amp;12' width=728 height=90 alt='Ukrainian Banner Network'></a>");
+	document.write("</iframe>");
+	//-->
+	</script><br>
+	<small><a href="//banner.kiev.ua/" target="_top">Українська Банерна Мережа</a></small>
+	</center>
+	<!-- Ukrainian Banner Network 728х90 END -->
+	</noindex>
+	
+	
+	<center><font style="font-size: 70% !important;" size="1"> 
+	<!--18895--> 
+	<a href="//serrurierparis-infos.fr/serrurier-a-paris/serrurier-paris-2/">Serrurier Paris 2</a>|/ <a href="//accordo.com.ua/ru/apostil-2.html">апостиль,легализация в Украине - Киев,Харьков</a> /|Подбор фурнитуры, при их использовании риск случайного повреждения минимален <a href="//al-facade.ru/peregorodkiof.html">душевая из стекла</a>.|Ремонт <a href="//balkonpk.kiev.ua/">Балкона, ремонт балконов под ключ киев</a>. 
+	 <a href="//dramatica.org.ua/">Українська Енциклопедія Драматика</a>. <br/>
+	</font></center>
+	
+	
+	 <div class="footer">
+	 <a href="/rules/">Про сайт</a> &bull;  admin (a*t) hyperchan.org &bull;  Uchan&copy; 2009-14880 <br/>
+	
+	 </div> </body></html>
+	 

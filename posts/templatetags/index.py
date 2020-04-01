@@ -50,7 +50,7 @@ def to_time(timestamp):
 
 @register.simple_tag
 def random_logo():
-    return random.choice(os.listdir(STATIC_ROOT+'randlogo/'))
+    return random.choice(os.listdir(STATIC_ROOT+'uchan/banners/'))
 
 
 @register.filter(name='format_size')
