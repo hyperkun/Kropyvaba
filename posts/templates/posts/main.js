@@ -161,6 +161,7 @@ function changeStyle(styleName, link) {
 	}
 
 function init_stylechooser() {
+	return;
 	var newElement = document.createElement('div');
 	newElement.className = 'styles';
 
