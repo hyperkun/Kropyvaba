@@ -411,7 +411,35 @@
 			 </div>
 		   </div>
 			</div>
-	</center><!--<center><div>Дружні іміджборди: <a class="barsadmin" href='http://www.srbijachan.org/' title="Сербська">http://www.srbijachan.org/</a></div></center>-->
+	</center>
+
+	<center>
+		<div class="box-outer">
+		  <div>
+			<div class="boxbar">
+			 <h2>Останні дописи</h2>
+			</div>
+			<div class="boxcontent1">
+				<ul>
+					{% for post in recent_posts %}
+					<li style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+						<strong>{{ post.board_name }}</strong>:
+						<a href="
+							{% if post.thread %}
+								{% url 'thread' post.board_url post.thread %}#{{post.id}}
+							{% else %}
+								{% url 'thread' post.board_url post.id %}
+							{% endif %}">
+							{{ post.snippet }}
+						</a>
+					</li>
+					{% endfor %}
+				</ul>
+			</div>
+		  </div>
+		   </div>
+	</center>
+	
 	<center>
 		 <div class="box-outer1"><center>
 	
