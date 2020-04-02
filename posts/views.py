@@ -65,7 +65,7 @@ def render_index(request):
         recent = []
         stats = None
     boards_doubled = [
-        [boards[i], boards[i + len(boards) // 2]] if (len(boards) % 2 == 0) or (i != ceil(len(boards) / 2) - 1) else [boards[i]]
+        [boards[i], boards[i + int(ceil(len(boards) / 2))]] if (len(boards) % 2 == 0) or (i != ceil(len(boards) / 2) - 1) else [boards[i]]
         for i in range(int(ceil(len(boards) / 2)))]
     context = {
         'config': config,
