@@ -1,2 +1,3 @@
 {% load index %}
- <time datetime="{{ post.time|date:"c" }}">{{ post.time }}</time>
+{% load tz %}
+ <time datetime="{{ post.time|date:"c" }}">{{ post.time|timezone:"Europe/Kiev" }}</time>
