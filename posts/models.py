@@ -185,7 +185,7 @@ def convert_to_classic_markup(board_context, markup):
                 mode = 0
             elif match.group(0).upper() == match.group(0):
                 mode = 1
-            elif match.group(0)[0].upper() + match.group(0)[1:].lower():
+            elif match.group(0)[0].upper() + match.group(0)[1:].lower() == match.group(0):
                 mode = 2
             else:
                 for maybe_mode in [3, 4]:
