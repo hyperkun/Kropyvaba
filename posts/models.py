@@ -19,6 +19,9 @@ POSTS_QUERY_GEO_APPENDIX = \
     "(select visible_ukr_name from geo_countries where visible_country = geo_countries.id) as country_name, " +\
     "(select visible_ukr_name from geo_cities where visible_city = geo_cities.id) as city_name"
 
+POST_MARKUP_CACHE = {}
+
+
 def named_tuple_fetch_all(cursor):
     desc = cursor.description
     nt_result = namedtuple('Result', [col[0] for col in desc])
@@ -49,7 +52,7 @@ def extract_posts(cursor, board_name):
     dm = Demarkuper()
     return [{
         'id': int(post.id),
-        'body': convert_to_classic_markup(board_name or post.board, post.text),
+        'body': convert_to_classic_markup_or_get_from_cache(board_name or post.board, int(post.id), post.text),
         'body_nomarkup': dm.feeda(post.text),
         'thread': int(post.thread or post.id),
         'is_op': post.thread is None,
@@ -280,6 +283,14 @@ def convert_to_classic_markup(board_context, markup):
             markup = str_replaced(markup, link_pos, begin, full_link)
             begin = link_pos + len(full_link)
     return markup
+
+
+def convert_to_classic_markup_or_get_from_cache(board_context, post_id, markup):
+    ret = POST_MARKUP_CACHE.get(post_id)
+    if ret is None:
+        ret = convert_to_classic_markup(board_context, markup)
+        POST_MARKUP_CACHE[post_id] = ret
+    return ret
 
 
 def classic_markup_link(board_id, post_id):
