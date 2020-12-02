@@ -173,6 +173,40 @@ FORMS = {key + e: value + e for key, value in INIT.items() for e in ENDINGS}
 
 
 def convert_to_classic_markup(board_context, markup):
+    for prefix, replace in FORMS.items():
+        matches = list(re.finditer(r'\b' + prefix + r'\b', markup, re.IGNORECASE))
+        shift = 0
+        for match in matches:
+            mode = None
+            if match.group(0).lower() == match.group(0):
+                mode = 0
+            elif match.group(0).upper() == match.group(0):
+                mode = 1
+            else:
+                for maybe_mode in [2, 3]:
+                    even = [c for i, c in enumerate(match.group(0)) if i % 2 == 0]
+                    odd  = [c for i, c in enumerate(match.group(0)) if i % 2 == 1]
+                    if ''.join([
+                        (c.lower() if maybe_mode == 2 else c.upper()) +
+                        ((odd[i].upper() if maybe_mode == 2 else odd[i].lower()) if i < len(odd) else '')
+                        for i, c in enumerate(even)
+                    ]) == match.group(0):
+                        mode = maybe_mode
+                        break
+            if mode is None:
+                mode = 0
+            if mode == 0:
+                v = replace.lower()
+            elif mode == 1:
+                v = replace.upper()
+            elif mode == 2:
+                v = ''.join([c.upper() if i % 2 == 1 else c.lower() for i, c in enumerate(replace)])
+            else:
+                v = ''.join([c.upper() if i % 2 == 0 else c.lower() for i, c in enumerate(replace)])
+            full_replace = '<span ' + RAINBOW_STYLE + '>' + v + '</span>'
+            delta = len(full_replace) - len(match.group(0))
+            markup = str_replaced(markup, match.start(0) + shift, match.end(0) + shift, full_replace)
+            shift += delta
     begin = 0
     while True:
         prefix = '<span class=l data-post='
@@ -245,40 +279,6 @@ def convert_to_classic_markup(board_context, markup):
             full_link = '<a href="' + quot_link + '">' + link + '</a>'
             markup = str_replaced(markup, link_pos, begin, full_link)
             begin = link_pos + len(full_link)
-    for prefix, replace in FORMS.items():
-        matches = list(re.finditer(r'\b' + prefix + r'\b', markup, re.IGNORECASE))
-        shift = 0
-        for match in matches:
-            mode = None
-            if match.group(0).lower() == match.group(0):
-                mode = 0
-            elif match.group(0).upper() == match.group(0):
-                mode = 1
-            else:
-                for maybe_mode in [2, 3]:
-                    even = [c for i, c in enumerate(match.group(0)) if i % 2 == 0]
-                    odd  = [c for i, c in enumerate(match.group(0)) if i % 2 == 1]
-                    if ''.join([
-                        (c.lower() if maybe_mode == 2 else c.upper()) +
-                        ((odd[i].upper() if maybe_mode == 2 else odd[i].lower()) if i < len(odd) else '')
-                        for i, c in enumerate(even)
-                    ]) == match.group(0):
-                        mode = maybe_mode
-                        break
-            if mode is None:
-                mode = 0
-            if mode == 0:
-                v = replace.lower()
-            elif mode == 1:
-                v = replace.upper()
-            elif mode == 2:
-                v = ''.join([c.upper() if i % 2 == 1 else c.lower() for i, c in enumerate(replace)])
-            else:
-                v = ''.join([c.upper() if i % 2 == 0 else c.lower() for i, c in enumerate(replace)])
-            full_replace = '<span ' + RAINBOW_STYLE + '>' + v + '</span>'
-            delta = len(full_replace) - len(match.group(0))
-            markup = str_replaced(markup, match.start(0) + shift, match.end(0) + shift, full_replace)
-            shift += delta
     return markup
 
 
