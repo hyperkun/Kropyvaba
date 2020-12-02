@@ -185,13 +185,15 @@ def convert_to_classic_markup(board_context, markup):
                 mode = 0
             elif match.group(0).upper() == match.group(0):
                 mode = 1
+            elif match.group(0)[0].upper() + match.group(0)[1:].lower():
+                mode = 2
             else:
-                for maybe_mode in [2, 3]:
+                for maybe_mode in [3, 4]:
                     even = [c for i, c in enumerate(match.group(0)) if i % 2 == 0]
                     odd  = [c for i, c in enumerate(match.group(0)) if i % 2 == 1]
                     if ''.join([
-                        (c.lower() if maybe_mode == 2 else c.upper()) +
-                        ((odd[i].upper() if maybe_mode == 2 else odd[i].lower()) if i < len(odd) else '')
+                        (c.lower() if maybe_mode == 3 else c.upper()) +
+                        ((odd[i].upper() if maybe_mode == 3 else odd[i].lower()) if i < len(odd) else '')
                         for i, c in enumerate(even)
                     ]) == match.group(0):
                         mode = maybe_mode
@@ -203,6 +205,8 @@ def convert_to_classic_markup(board_context, markup):
             elif mode == 1:
                 v = replace.upper()
             elif mode == 2:
+                v = replace[0].upper() + replace[1:].lower()
+            elif mode == 3:
                 v = ''.join([c.upper() if i % 2 == 1 else c.lower() for i, c in enumerate(replace)])
             else:
                 v = ''.join([c.upper() if i % 2 == 0 else c.lower() for i, c in enumerate(replace)])
