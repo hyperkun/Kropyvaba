@@ -171,7 +171,7 @@ INIT = {
     'кропивач': 'салодівчач',
     'жироблядач': 'бурʼянач'
 }
-ENDINGS = ['', 'а', 'у', 'ем', 'і', 'еві']
+ENDINGS = ['', 'а', 'у', 'ем', 'і', 'еві', 'е']
 FORMS = {key + e: value + e for key, value in INIT.items() for e in ENDINGS}
 
 
