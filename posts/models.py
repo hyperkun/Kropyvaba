@@ -159,14 +159,7 @@ def str_replaced(str, begin, end, replacement):
     return str[:begin] + replacement + str[end:]
 
 
-RAINBOW_STYLE = 'style=\'\
-    background: linear-gradient(90deg, #f00, #0ff, #00f, #f00);\
-    background-size: 600% 600%;\
-    -webkit-background-clip: text;\
-    -webkit-text-fill-color: transparent;\
-    -webkit-animation: RAINBOW 2s linear infinite;\
-    -moz-animation: RAINBOW 2s linear infinite;\
-    animation: RAINBOW 2s linear infinite running normal;\''
+RAINBOW_STYLE = 'style=\'color: #a00\''
 INIT = {
     'кропивач': 'салодівчач',
     'жироблядач': 'бурʼянач'
@@ -175,8 +168,8 @@ ENDINGS = ['', 'а', 'у', 'ем', 'і', 'еві', 'е']
 FORMS = {key + e: value + e for key, value in INIT.items() for e in ENDINGS}
 
 
-def convert_to_classic_markup(board_context, markup):
-    for prefix, replace in FORMS.items():
+def convert_to_classic_markup(board_context, post_id, markup):
+    for prefix, replace in FORMS.items() if 10834 <= post_id <= 11419 else []:
         matches = list(re.finditer(r'\b' + prefix + r'\b', markup, re.IGNORECASE))
         shift = 0
         for match in matches:
@@ -292,7 +285,7 @@ def convert_to_classic_markup(board_context, markup):
 def convert_to_classic_markup_or_get_from_cache(board_context, post_id, markup):
     ret = POST_MARKUP_CACHE.get(post_id)
     if ret is None:
-        ret = convert_to_classic_markup(board_context, markup)
+        ret = convert_to_classic_markup(board_context, post_id, markup)
         POST_MARKUP_CACHE[post_id] = ret
     return ret
 
