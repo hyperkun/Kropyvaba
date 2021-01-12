@@ -43,7 +43,7 @@ class Page404(object):
         try:
             return self.func(*args, **kwargs)
         except ObjectDoesNotExist:
-            return HttpResponse('404')
+            return HttpResponse('404', status=404)
 
 
 @Page404
