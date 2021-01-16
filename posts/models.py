@@ -101,6 +101,8 @@ def mime_to_ext(mime):
         return "png"
     elif mime == "image/gif":
         return "gif"
+    elif mime == "video/mp4":
+        return "mp4"
     else:
         return "webm"
 
